@@ -1,0 +1,1 @@
+this is the scrapper for https://centralmosque.org.uk/timetable/
