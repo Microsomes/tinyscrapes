@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"sync"
 	"unicode/utf8"
 
 	"github.com/gocolly/colly"
@@ -123,8 +124,62 @@ func processNAMAZ(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func worker(id int, wg *sync.WaitGroup, toReturn chan []Prayer) {
+
+	dat, err := ioutil.ReadFile(fmt.Sprintf("cache/data_%d_%d.json", 2021, id))
+
+	data := []Prayer{}
+
+	_ = json.Unmarshal([]byte(dat), &data)
+
+	if err != nil {
+
+		c := make(chan []Prayer)
+
+		go CrawlBCM(c, id)
+		x := <-c
+		js, _ := json.Marshal(x)
+		_ = ioutil.WriteFile(fmt.Sprintf("cache/data_%d_%d.json", 2021, id), js, 0644)
+		d2 := []Prayer{}
+		dat, _ := ioutil.ReadFile(fmt.Sprintf("cache/data_%d_%d.json", 2021, id))
+
+		_ = json.Unmarshal([]byte(dat), &d2)
+		toReturn <- d2
+		wg.Done()
+
+	} else {
+		toReturn <- data
+		wg.Done()
+		return
+	}
+}
+
+func showAllYear(w http.ResponseWriter, h *http.Request) {
+	var wg sync.WaitGroup
+
+	c := make(chan []Prayer)
+
+	var allResults [][]Prayer
+
+	for i := 1; i <= 12; i++ {
+		wg.Add(1)
+		go worker(i, &wg, c)
+		res := <-c
+		allResults = append(allResults, res)
+	}
+	wg.Wait()
+
+	fmt.Println(allResults)
+
+	w.Header().Set("Content-Type", "application/json")
+	js, _ := json.Marshal(allResults)
+	w.Write(js)
+
+}
+
 func handleRequest() {
 	http.HandleFunc("/", processNAMAZ)
+	http.HandleFunc("/all", showAllYear)
 	log.Fatal(http.ListenAndServe(":10000", nil))
 }
 
