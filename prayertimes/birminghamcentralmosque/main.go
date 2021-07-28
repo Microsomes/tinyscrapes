@@ -14,14 +14,15 @@ import (
 )
 
 type Prayer struct {
-	Month   string
-	Day     string
-	Sunrise string
-	Fajr    string
-	Zuhr    string
-	Asr     string
-	Maghrib string
-	Isha    string
+	Month     string
+	Day       string
+	Sunrise   string
+	Fajr      string
+	FajrJamat string
+	Zuhr      string
+	Asr       string
+	Maghrib   string
+	Isha      string
 }
 
 func CrawlBCM(cc chan []Prayer, monthRequested int) {
@@ -37,6 +38,7 @@ func CrawlBCM(cc chan []Prayer, monthRequested int) {
 			var month = ""
 			var day = ""
 			var fajr = ""
+			var fajrJamat = ""
 			var sunrise = ""
 			var zuhr = ""
 			var asr = ""
@@ -52,6 +54,9 @@ func CrawlBCM(cc chan []Prayer, monthRequested int) {
 				}
 				if i == 2 {
 					fajr = h.Text
+				}
+				if i == 3 {
+					fajrJamat = h.Text
 				}
 				if i == 4 {
 					sunrise = h.Text
@@ -72,14 +77,15 @@ func CrawlBCM(cc chan []Prayer, monthRequested int) {
 
 			if utf8.RuneCountInString(month) >= 4 {
 				Prayers = append(Prayers, Prayer{
-					Month:   month,
-					Day:     day,
-					Fajr:    fajr,
-					Sunrise: sunrise,
-					Zuhr:    zuhr,
-					Asr:     asr,
-					Maghrib: maghrib,
-					Isha:    isha,
+					Month:     month,
+					Day:       day,
+					Fajr:      fajr,
+					FajrJamat: fajrJamat,
+					Sunrise:   sunrise,
+					Zuhr:      zuhr,
+					Asr:       asr,
+					Maghrib:   maghrib,
+					Isha:      isha,
 				})
 			}
 		})
