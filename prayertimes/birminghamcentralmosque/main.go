@@ -157,6 +157,24 @@ func worker(id int, wg *sync.WaitGroup, toReturn chan []Prayer) {
 func showAllYear(w http.ResponseWriter, h *http.Request) {
 	var wg sync.WaitGroup
 
+	var cacheKey = h.URL.Query().Get("cachekey")
+
+	if cacheKey == "" {
+		fmt.Fprint(w, "No ?cachekey present")
+		return
+	}
+
+	dat, err := ioutil.ReadFile(fmt.Sprintf("cache/cache_%s.json", cacheKey))
+
+	if err == nil {
+		var allResults [][]Prayer
+
+		_ = json.Unmarshal([]byte(dat), &allResults)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(dat)
+		return
+	}
+
 	c := make(chan []Prayer)
 
 	var allResults [][]Prayer
@@ -173,6 +191,8 @@ func showAllYear(w http.ResponseWriter, h *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	js, _ := json.Marshal(allResults)
+
+	ioutil.WriteFile(fmt.Sprintf("cache/cache_%s.json", cacheKey), js, 0644)
 	w.Write(js)
 
 }
