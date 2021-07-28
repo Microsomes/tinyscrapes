@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
+	mosquescrappers "microsomes/tinyscrapes/bcm/mod/mosqueScrappers"
 	"net/http"
 	"os"
 	"strconv"
@@ -131,9 +133,35 @@ func showAllYear(w http.ResponseWriter, h *http.Request) {
 
 }
 
+type StrucutedResponse struct {
+	Status string
+	Msg    string
+	Data   interface{}
+}
+
+func handleISNA(w http.ResponseWriter, h *http.Request) {
+	m := make(chan []mosquescrappers.ISNAPrayer)
+	go mosquescrappers.ScrapeISNACanada(m)
+	res := <-m
+	fmt.Println(res)
+
+	var toReturn = StrucutedResponse{
+		Status: "OK",
+		Msg:    "Current Namaz times from https://isnacanada.com/",
+		Data:   res,
+	}
+
+	tepl, _ := template.ParseFiles("templates/isna/index.html")
+
+	tepl.Execute(w, toReturn)
+
+	// w.Write(jss)
+}
+
 func handleRequest() {
 	http.HandleFunc("/", processNAMAZ)
 	http.HandleFunc("/all", showAllYear)
+	http.HandleFunc("/isna", handleISNA)
 	var PORT = os.Getenv("PORT")
 	if PORT == "" {
 		PORT = "10000"
