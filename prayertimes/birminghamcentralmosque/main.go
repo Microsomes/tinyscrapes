@@ -1,16 +1,21 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"sync"
 	"unicode/utf8"
 
+	firebase "firebase.google.com/go"
 	"github.com/gocolly/colly"
+
+	"google.golang.org/api/option"
 )
 
 type Prayer struct {
@@ -206,9 +211,32 @@ func showAllYear(w http.ResponseWriter, h *http.Request) {
 func handleRequest() {
 	http.HandleFunc("/", processNAMAZ)
 	http.HandleFunc("/all", showAllYear)
-	log.Fatal(http.ListenAndServe(":10000", nil))
+	var PORT = os.Getenv("PORT")
+	if PORT == "" {
+		PORT = "10000"
+	}
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil))
 }
 
 func main() {
+
+	opt := option.WithCredentialsFile("firebase.json")
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		log.Fatal("error initializing app:")
+		return
+	}
+
+	client, err := app.Firestore(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	client.Collection("test").Add(context.Background(), map[string]interface{}{
+		"msg": "Hello",
+	})
+
+	defer client.Close()
+
 	handleRequest()
 }
