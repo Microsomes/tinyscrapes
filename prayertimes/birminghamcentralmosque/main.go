@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"unicode/utf8"
 
 	"github.com/gocolly/colly"
@@ -87,15 +89,38 @@ func CrawlBCM(cc chan []Prayer, monthRequested int) {
 }
 
 func processNAMAZ(w http.ResponseWriter, r *http.Request) {
+	var cacheKey = r.URL.Query().Get("cachekey")
+
+	var monthRequested = r.URL.Query().Get("month")
+
+	var mo, err = strconv.Atoi(monthRequested)
+
+	if err != nil {
+		fmt.Fprintf(w, "month is wrong ?month=2 ?month only accepts a int")
+		return
+	}
+
+	if cacheKey != "" {
+		dat, err := ioutil.ReadFile(fmt.Sprintf("cache/data_%s_%d.json", cacheKey, mo))
+		if err != nil {
+		} else {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(dat)
+			return
+		}
+	}
+
 	c := make(chan []Prayer)
-	go CrawlBCM(c, 8)
+	go CrawlBCM(c, mo)
 	x := <-c
 	fmt.Println(x)
 
 	js, _ := json.Marshal(x)
+	_ = ioutil.WriteFile(fmt.Sprintf("cache/data_%s_%d.json", cacheKey, mo), js, 0644)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
+
 }
 
 func handleRequest() {
