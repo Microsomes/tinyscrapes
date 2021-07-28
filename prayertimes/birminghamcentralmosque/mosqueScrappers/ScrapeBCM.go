@@ -1,4 +1,4 @@
-package main
+package mosquescrappers
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 )
 
 //function is responsible for saving the cache
-func SaveToCache(Prayers []Prayer, monthSaved int, status chan int) {
+func SaveToCache(Prayers []Prayer, monthSaved int, status chan int, cacheKey string) {
 	fmt.Println("saving to cache")
 	opt := option.WithCredentialsFile("firebase.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
@@ -28,17 +28,67 @@ func SaveToCache(Prayers []Prayer, monthSaved int, status chan int) {
 	}
 	defer client.Close()
 
-	client.Collection("cache").Add(context.Background(), map[string]interface{}{
-		"status": "ok",
-		"month":  monthSaved,
-		"all":    Prayers,
-	})
+	client.Collection("cache").Doc(fmt.Sprintf("cache_%s_%d", cacheKey, monthSaved)).Set(
+		context.Background(),
+		map[string]interface{}{
+			"status": "ok",
+			"month":  monthSaved,
+			"all":    Prayers,
+		},
+	)
 
 	time.Sleep(10 * time.Second)
 	status <- 3
 }
 
-func CrawlBCM(cc chan []Prayer, monthRequested int) {
+func findCache(cacheKey string, monthRequested int, c chan int) {
+	opt := option.WithCredentialsFile("firebase.json")
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		log.Fatal("error initializing app:")
+		return
+	}
+
+	client, err := app.Firestore(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	dsnap, err := client.Collection("cache").Doc(fmt.Sprintf("cache_%s_%d", cacheKey, monthRequested)).Get(context.Background())
+
+	if err != nil {
+		fmt.Println("error")
+	}
+	var ddata = dsnap.Data()
+
+	fmt.Println(ddata)
+
+}
+
+type Prayer struct {
+	Month     string
+	Day       string
+	Sunrise   string
+	Fajr      string
+	FajrJamat string
+	Zuhr      string
+	Asr       string
+	Maghrib   string
+	Isha      string
+}
+
+func CrawlBCM(cc chan []Prayer, monthRequested int, cacheKey string) {
+
+	findCacheChannel := make(chan int)
+	go findCache(cacheKey, monthRequested, findCacheChannel)
+	didFindCache := <-findCacheChannel
+
+	if didFindCache != 0 {
+		cc <- []Prayer{}
+		return
+	}
+
 	var Prayers []Prayer
 	var url = fmt.Sprintf("https://centralmosque.org.uk/wp-admin/admin-ajax.php?action=get_monthly_timetable&month=%d", monthRequested)
 	fmt.Println(url)
@@ -105,7 +155,7 @@ func CrawlBCM(cc chan []Prayer, monthRequested int) {
 
 		//save to cache first
 		cindex := make(chan int)
-		go SaveToCache(Prayers, monthRequested, cindex)
+		go SaveToCache(Prayers, monthRequested, cindex, cacheKey)
 
 		ltindex := <-cindex
 		fmt.Println(ltindex)

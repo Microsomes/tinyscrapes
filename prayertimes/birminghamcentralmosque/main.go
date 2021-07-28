@@ -4,26 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
 	mosquescrappers "microsomes/tinyscrapes/bcm/mod/mosqueScrappers"
 	"net/http"
 	"os"
 	"strconv"
-	"sync"
 )
-
-type Prayer struct {
-	Month     string
-	Day       string
-	Sunrise   string
-	Fajr      string
-	FajrJamat string
-	Zuhr      string
-	Asr       string
-	Maghrib   string
-	Isha      string
-}
 
 func processNAMAZ(w http.ResponseWriter, r *http.Request) {
 	var cacheKey = r.URL.Query().Get("cachekey")
@@ -38,100 +24,96 @@ func processNAMAZ(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if cacheKey != "" {
-		dat, err := ioutil.ReadFile(fmt.Sprintf("cache/data_%s_%d.json", cacheKey, mo))
-		if err != nil {
-		} else {
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(dat)
-			return
-		}
+		//all data is now live
+	} else {
+		fmt.Fprintf(w, "?cachekey is missing")
+		return
 	}
 
-	c := make(chan []Prayer)
-	go CrawlBCM(c, mo)
+	c := make(chan []mosquescrappers.Prayer)
+	go mosquescrappers.CrawlBCM(c, mo, cacheKey)
 	x := <-c
 	fmt.Println(x)
 
 	js, _ := json.Marshal(x)
-	_ = ioutil.WriteFile(fmt.Sprintf("cache/data_%s_%d.json", cacheKey, mo), js, 0644)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
 
 }
 
-func worker(id int, wg *sync.WaitGroup, toReturn chan []Prayer) {
+// func worker(id int, wg *sync.WaitGroup, toReturn chan []mosquescrappers.Prayer) {
 
-	dat, err := ioutil.ReadFile(fmt.Sprintf("cache/data_%d_%d.json", 2021, id))
+// 	dat, err := ioutil.ReadFile(fmt.Sprintf("cache/data_%d_%d.json", 2021, id))
 
-	data := []Prayer{}
+// 	data := []mosquescrappers.Prayer{}
 
-	_ = json.Unmarshal([]byte(dat), &data)
+// 	_ = json.Unmarshal([]byte(dat), &data)
 
-	if err != nil {
+// 	if err != nil {
 
-		c := make(chan []Prayer)
+// 		c := make(chan []mosquescrappers.Prayer)
 
-		go CrawlBCM(c, id)
-		x := <-c
-		js, _ := json.Marshal(x)
-		_ = ioutil.WriteFile(fmt.Sprintf("cache/data_%d_%d.json", 2021, id), js, 0644)
-		d2 := []Prayer{}
-		dat, _ := ioutil.ReadFile(fmt.Sprintf("cache/data_%d_%d.json", 2021, id))
+// 		go mosquescrappers.CrawlBCM(c, id)
+// 		x := <-c
+// 		js, _ := json.Marshal(x)
+// 		_ = ioutil.WriteFile(fmt.Sprintf("cache/data_%d_%d.json", 2021, id), js, 0644)
+// 		d2 := []mosquescrappers.Prayer{}
+// 		dat, _ := ioutil.ReadFile(fmt.Sprintf("cache/data_%d_%d.json", 2021, id))
 
-		_ = json.Unmarshal([]byte(dat), &d2)
-		toReturn <- d2
-		wg.Done()
+// 		_ = json.Unmarshal([]byte(dat), &d2)
+// 		toReturn <- d2
+// 		wg.Done()
 
-	} else {
-		toReturn <- data
-		wg.Done()
-		return
-	}
-}
+// 	} else {
+// 		toReturn <- data
+// 		wg.Done()
+// 		return
+// 	}
+// }
 
-func showAllYear(w http.ResponseWriter, h *http.Request) {
-	var wg sync.WaitGroup
+// func showAllYear(w http.ResponseWriter, h *http.Request) {
+// 	var wg sync.WaitGroup
 
-	var cacheKey = h.URL.Query().Get("cachekey")
+// 	var cacheKey = h.URL.Query().Get("cachekey")
 
-	if cacheKey == "" {
-		fmt.Fprint(w, "No ?cachekey present")
-		return
-	}
+// 	if cacheKey == "" {
+// 		fmt.Fprint(w, "No ?cachekey present")
+// 		return
+// 	}
 
-	dat, err := ioutil.ReadFile(fmt.Sprintf("cache/cache_%s.json", cacheKey))
+// 	dat, err := ioutil.ReadFile(fmt.Sprintf("cache/cache_%s.json", cacheKey))
 
-	if err == nil {
-		var allResults [][]Prayer
+// 	if err == nil {
+// 		var allResults [][]mosquescrappers.Prayer
 
-		_ = json.Unmarshal([]byte(dat), &allResults)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(dat)
-		return
-	}
+// 		_ = json.Unmarshal([]byte(dat), &allResults)
+// 		w.Header().Set("Content-Type", "application/json")
+// 		w.Write(dat)
+// 		return
+// 	}
 
-	c := make(chan []Prayer)
+// 	c := make(chan []mosquescrappers.Prayer)
 
-	var allResults [][]Prayer
+// 	var allResults [][]mosquescrappers.Prayer
 
-	for i := 1; i <= 12; i++ {
-		wg.Add(1)
-		go worker(i, &wg, c)
-		res := <-c
-		allResults = append(allResults, res)
-	}
-	wg.Wait()
+// 	for i := 1; i <= 12; i++ {
+// 		wg.Add(1)
+// 		go worker(i, &wg, c)
+// 		res := <-c
+// 		allResults = append(allResults, res)
+// 	}
+// 	wg.Wait()
 
-	fmt.Println(allResults)
+// 	fmt.Println(allResults)
 
-	w.Header().Set("Content-Type", "application/json")
-	js, _ := json.Marshal(allResults)
+// 	w.Header().Set("Content-Type", "application/json")
+// 	js, _ := json.Marshal(allResults)
 
-	ioutil.WriteFile(fmt.Sprintf("cache/cache_%s.json", cacheKey), js, 0644)
-	w.Write(js)
+// 	ioutil.WriteFile(fmt.Sprintf("cache/cache_%s.json", cacheKey), js, 0644)
+// 	w.Write(js)
 
-}
+// }
 
 type StrucutedResponse struct {
 	Status string
@@ -160,7 +142,7 @@ func handleISNA(w http.ResponseWriter, h *http.Request) {
 
 func handleRequest() {
 	http.HandleFunc("/", processNAMAZ)
-	http.HandleFunc("/all", showAllYear)
+	// http.HandleFunc("/all", showAllYear)
 	http.HandleFunc("/isna", handleISNA)
 	var PORT = os.Getenv("PORT")
 	if PORT == "" {
