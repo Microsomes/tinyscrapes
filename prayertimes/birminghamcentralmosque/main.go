@@ -188,9 +188,16 @@ func processCreate(w http.ResponseWriter, h *http.Request) {
 	title := h.PostForm.Get("title")
 	body := h.PostForm.Get("body")
 
-	helpers.CreatePost()
-
-	fmt.Fprint(w, "d")
+	p := helpers.Post{
+		Title: title,
+		Body:  body,
+		Date:  time.Now(),
+		Unix:  int(time.Now().Unix()),
+	}
+	c := make(chan int)
+	go helpers.CreatePost(&p, c)
+	x := <-c
+	fmt.Fprint(w, x)
 
 }
 func handleRequest() {
