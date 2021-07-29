@@ -86,9 +86,15 @@ type Prayer struct {
 	FajrJamat string `firestore:"FajrJamat,omitempty"`
 	Sunrise   string `firestore:"Sunrise,omitempty"`
 	Zuhr      string `firestore:"Zuhr,omitempty"`
-	Asr       string `firestore:"Asr,omitempty"`
+	ZuhrJamat string `firestore:"ZuhrJamat,omitempty"`
+
+	Asr          string `firestore:"Asr,omitempty"`
+	AsrJamat     string `firestore:"AsrJamat,omitempty"`
+	Maghrib      string `firestore:"Maghrib,omitempty"`
+	MaghribJamat string `firestore:"MaghribJamat,omitempty"`
+
 	Isha      string `firestore:"Isha,omitempty"`
-	Maghrib   string `firestore:"Maghrib,omitempty"`
+	IshaJamat string `firestore:"IshaJamat,omitempty"`
 }
 
 func CrawlBCM(cc chan []Prayer, monthRequested int, cacheKey string) {
@@ -118,9 +124,13 @@ func CrawlBCM(cc chan []Prayer, monthRequested int, cacheKey string) {
 			var fajrJamat = ""
 			var sunrise = ""
 			var zuhr = ""
+			var zuhrJamat = ""
 			var asr = ""
+			var asrJamat = ""
 			var maghrib = ""
+			var maghribJamat = ""
 			var isha = ""
+			var ishaJamat = ""
 
 			f.ForEach("td", func(i int, h *colly.HTMLElement) {
 				if i == 0 {
@@ -141,28 +151,44 @@ func CrawlBCM(cc chan []Prayer, monthRequested int, cacheKey string) {
 				if i == 5 {
 					zuhr = h.Text
 				}
+				if i == 6 {
+					zuhrJamat = h.Text
+				}
 				if i == 7 {
 					asr = h.Text
+				}
+				if i == 8 {
+					asrJamat = h.Text
 				}
 				if i == 9 {
 					maghrib = h.Text
 				}
+				if i == 10 {
+					maghribJamat = h.Text
+				}
 				if i == 11 {
 					isha = h.Text
+				}
+				if i == 12 {
+					ishaJamat = h.Text
 				}
 			})
 
 			if utf8.RuneCountInString(month) >= 4 {
 				Prayers = append(Prayers, Prayer{
-					Month:     month,
-					Day:       day,
-					Fajr:      fajr,
-					FajrJamat: fajrJamat,
-					Sunrise:   sunrise,
-					Zuhr:      zuhr,
-					Asr:       asr,
-					Maghrib:   maghrib,
-					Isha:      isha,
+					Month:        month,
+					Day:          day,
+					Fajr:         fajr,
+					FajrJamat:    fajrJamat,
+					Sunrise:      sunrise,
+					Zuhr:         zuhr,
+					ZuhrJamat:    zuhrJamat,
+					Asr:          asr,
+					AsrJamat:     asrJamat,
+					Maghrib:      maghrib,
+					MaghribJamat: maghribJamat,
+					Isha:         isha,
+					IshaJamat:    ishaJamat,
 				})
 			}
 		})

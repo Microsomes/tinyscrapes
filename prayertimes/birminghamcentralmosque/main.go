@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
+	"time"
 )
 
 func processNAMAZ(w http.ResponseWriter, r *http.Request) {
@@ -87,9 +89,97 @@ func handleISNA(w http.ResponseWriter, h *http.Request) {
 	// w.Write(jss)
 }
 
+func currentBCMLogic(resc chan mosquescrappers.Prayer) {
+	var month = int(time.Now().Month())
+
+	c := make(chan []mosquescrappers.Prayer)
+	go mosquescrappers.CrawlBCM(c, month, strconv.Itoa(time.Now().Year()))
+	x := <-c
+
+	var res = mosquescrappers.Prayer{}
+
+	for _, val := range x {
+		var cuday = strings.Split(val.Month, " ")[1]
+		if (cuday) == strconv.Itoa((time.Now().Day())) {
+			res = val
+		}
+	}
+	resc <- res
+}
+
+func currentBCM(w http.ResponseWriter, h *http.Request) {
+
+	c := make(chan mosquescrappers.Prayer)
+	go currentBCMLogic(c)
+	res := <-c
+
+	js, _ := json.Marshal(res)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+
+}
+
+func handleBCM(w http.ResponseWriter, h *http.Request) {
+	c := make(chan mosquescrappers.Prayer)
+	go currentBCMLogic(c)
+	res := <-c
+
+	type ISNAPrayer struct {
+		PrayerName  string
+		PrayerBegin string
+		PrayerJamah string
+		HijriDate   string
+		Gregorian   string
+	}
+
+	var cd []ISNAPrayer
+
+	cd = append(cd, ISNAPrayer{
+		PrayerName:  "Fajr",
+		PrayerBegin: res.Fajr,
+		PrayerJamah: res.FajrJamat,
+		Gregorian:   res.Month,
+	})
+	cd = append(cd, ISNAPrayer{
+		PrayerName:  "Zuhr",
+		PrayerBegin: res.Zuhr,
+		PrayerJamah: res.ZuhrJamat,
+	})
+	cd = append(cd, ISNAPrayer{
+		PrayerName:  "Asr",
+		PrayerBegin: res.Asr,
+		PrayerJamah: res.AsrJamat,
+	})
+	cd = append(cd, ISNAPrayer{
+		PrayerName:  "Maghrib",
+		PrayerBegin: res.Maghrib,
+		PrayerJamah: res.MaghribJamat,
+	})
+	cd = append(cd, ISNAPrayer{
+		PrayerName:  "Isha",
+		PrayerBegin: res.Isha,
+		PrayerJamah: res.IshaJamat,
+	})
+
+	var toReturn = StrucutedResponse{
+		Status: "OK",
+		Msg:    "Current Namaz times from https://centralmosque.org.uk/",
+		Data:   cd,
+	}
+
+	tepl, _ := template.ParseFiles("templates/bcm/index.html")
+	tepl.Execute(w, toReturn)
+
+}
+
 func handleRequest() {
+	//all api calls return json
 	http.HandleFunc("/", processNAMAZ)
 	http.HandleFunc("/all", showAllYear)
+	http.HandleFunc("/bcmc", currentBCM)
+
+	//these generate templates
+	http.HandleFunc("/bcm", handleBCM)
 	http.HandleFunc("/isna", handleISNA)
 	var PORT = os.Getenv("PORT")
 	if PORT == "" {
@@ -99,6 +189,10 @@ func handleRequest() {
 }
 
 func main() {
+	year, month, day := time.Now().Date()
+	fmt.Println(year)
+	fmt.Println(int(month))
+	fmt.Println(day)
 
 	handleRequest()
 
