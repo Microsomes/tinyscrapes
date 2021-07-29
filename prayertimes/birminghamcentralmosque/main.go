@@ -43,9 +43,9 @@ func processNAMAZ(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func worker(id int, wg *sync.WaitGroup, toReturn chan []mosquescrappers.Prayer) {
+func worker(id int, wg *sync.WaitGroup, toReturn chan []mosquescrappers.Prayer, cacheKey string) {
 	c := make(chan []mosquescrappers.Prayer)
-	go mosquescrappers.CrawlBCM(c, id, "2021")
+	go mosquescrappers.CrawlBCM(c, id, cacheKey)
 	x := <-c
 	toReturn <- x
 	wg.Done()
@@ -68,7 +68,7 @@ func showAllYear(w http.ResponseWriter, h *http.Request) {
 
 	for i := 1; i <= 12; i++ {
 		wg.Add(1)
-		go worker(i, &wg, c)
+		go worker(i, &wg, c, cacheKey)
 		res := <-c
 		allResults = append(allResults, res)
 	}
