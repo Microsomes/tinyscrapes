@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tayyab Javed.com</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+</head>
+<body>
+    <div class="bg-black h-screen w-screen">
+        <div class="p-12 container mx-auto flex items-center justify-center flex-col">
+          <p class="text-xl text-white ">This website is of <span class="text-bold italic">Tayyab Javed</span> Programmer,Developer and Hacker</p>
+          <p class="text-white mt-2">I have over 5 years developing bespoke solutions for businesses, to increase productivity and efficiency.</p>
+      
+          <form method="POST" class="mt-12 w-full">
+
+            <input class="pl-2 w-full h-12 rounded-md" type="text" placeholder="your title" name="title"/>
+            <div class="bg-white p-2 mt-6">
+                <textarea name="body" id="textarea"></textarea>
+            </form>
+            <input class="bg-black p-2 text-white cursor-pointer shadow-xl rounded-md" type="submit" value="post"/>
+         
+        </form>
+      
+        </div>
+        </div>
+        <script>
+            var simplemde = new SimpleMDE({ element: document.getElementById("textarea") });
+
+            </script>
+</body>
+</html>

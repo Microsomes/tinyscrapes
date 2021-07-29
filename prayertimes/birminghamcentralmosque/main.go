@@ -172,10 +172,22 @@ func handleBCM(w http.ResponseWriter, h *http.Request) {
 
 }
 
+func handleHomePage(w http.ResponseWriter, h *http.Request) {
+	tepl, _ := template.ParseFiles("templates/tj/index.html")
+	tepl.Execute(w, "")
+}
+
+func handleCreate(w http.ResponseWriter, h *http.Request) {
+	tepl, _ := template.ParseFiles("templates/tj/create.html")
+	tepl.Execute(w, "")
+}
+
 func handleRequest() {
 	//all api calls return json
-	http.HandleFunc("/", processNAMAZ)
-	http.HandleFunc("/all", showAllYear)
+	http.HandleFunc("/", handleHomePage)
+	http.HandleFunc("/create", handleCreate)
+	http.HandleFunc("bcmmonth/", processNAMAZ)
+	http.HandleFunc("/bcmall", showAllYear)
 	http.HandleFunc("/bcmc", currentBCM)
 
 	//these generate templates
