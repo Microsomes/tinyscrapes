@@ -9,12 +9,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func CreatePost(p *entity.Post, c chan string) {
-
-	if p.Title == "" {
-		c <- "0"
-		return
-	}
+func ViewPost(postid string, c chan entity.Post) {
 	opt := option.WithCredentialsFile("firebase.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
@@ -27,10 +22,11 @@ func CreatePost(p *entity.Post, c chan string) {
 		log.Fatal(err)
 	}
 	defer client.Close()
-	ref, _, err := client.Collection("posts").Add(context.Background(), p)
-	if err != nil {
-		c <- "0"
-		return
-	}
-	c <- ref.ID
+
+	r, _ := client.Collection("posts").Doc(postid).Get(context.Background())
+
+	var p entity.Post
+	r.DataTo(&p)
+	c <- p
+
 }

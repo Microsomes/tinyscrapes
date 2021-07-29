@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	entity "microsomes/tinyscrapes/bcm/mod/entitiy"
 	helpers "microsomes/tinyscrapes/bcm/mod/helpers"
 	mosquescrappers "microsomes/tinyscrapes/bcm/mod/mosqueScrappers"
 	"net/http"
@@ -188,23 +189,41 @@ func processCreate(w http.ResponseWriter, h *http.Request) {
 	title := h.PostForm.Get("title")
 	body := h.PostForm.Get("body")
 
-	p := helpers.Post{
+	p := entity.Post{
 		Title: title,
 		Body:  body,
 		Date:  time.Now(),
 		Unix:  int(time.Now().Unix()),
 	}
-	c := make(chan int)
+	c := make(chan string)
 	go helpers.CreatePost(&p, c)
 	x := <-c
-	fmt.Fprint(w, x)
+	// http.Redirect(w, h, fmt.Sprintf("/view?postid=%s", x), 200)
+	fmt.Fprintf(w, x)
 
 }
+
+func processPostView(w http.ResponseWriter, h *http.Request) {
+	var postid = h.URL.Query().Get("postid")
+	if postid == "" {
+		fmt.Fprintf(w, "no ?postid present")
+		return
+	}
+	c := make(chan entity.Post)
+	go helpers.ViewPost(postid, c)
+	x := <-c
+
+	tepl, _ := template.ParseFiles("templates/tj/view.html")
+	tepl.Execute(w, x)
+
+}
+
 func handleRequest() {
 	//all api calls return json
 	http.HandleFunc("/", handleHomePage)
 	http.HandleFunc("/create", handleCreate)
 	http.HandleFunc("/processCreate", processCreate)
+	http.HandleFunc("/view", processPostView)
 	http.HandleFunc("bcmmonth/", processNAMAZ)
 	http.HandleFunc("/bcmall", showAllYear)
 	http.HandleFunc("/bcmc", currentBCM)
