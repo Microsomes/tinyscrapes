@@ -176,7 +176,17 @@ func handleBCM(w http.ResponseWriter, h *http.Request) {
 
 func handleHomePage(w http.ResponseWriter, h *http.Request) {
 	tepl, _ := template.ParseFiles("templates/tj/index.html")
-	tepl.Execute(w, "")
+	c := make(chan []entity.PostR)
+	go helpers.GetAllPosts(c)
+	x := <-c
+	type toRe struct {
+		Data []entity.PostR
+	}
+	xo := toRe{
+		Data: x,
+	}
+
+	tepl.Execute(w, xo)
 }
 
 func handleCreate(w http.ResponseWriter, h *http.Request) {
@@ -241,11 +251,5 @@ func handleRequest() {
 }
 
 func main() {
-	year, month, day := time.Now().Date()
-	fmt.Println(year)
-	fmt.Println(int(month))
-	fmt.Println(day)
-
 	handleRequest()
-
 }

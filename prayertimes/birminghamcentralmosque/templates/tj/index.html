@@ -12,8 +12,15 @@
         <div class="p-12 container mx-auto flex items-center justify-center flex-col">
           <p class="text-xl text-white ">This website is of <span class="text-bold italic">Tayyab Javed</span> Programmer,Developer and Hacker</p>
           <p class="text-white mt-2">I have over 5 years developing bespoke solutions for businesses, to increase productivity and efficiency.</p>
-      
-          <p class="text-2xl text-white mt-6">Posts Entries: {{.Title}} </p>
+          <div class="bg-gray-700 p-2 rounded-md m-12 text-center">
+          <p class="text-2xl text-white mt-6">Blog Entries:  </p>
+          {{range .Data }}
+            <div>
+              <p class="text-white"><a class="underline" target="_blank" href="/view?postid={{.DocID}}">{{.Title}}</a></p>
+              
+            </div>
+          {{end}}
+          </div>
       
         </div>
         </div>
