@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 )
 
 func processNAMAZ(w http.ResponseWriter, r *http.Request) {
@@ -42,78 +43,43 @@ func processNAMAZ(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// func worker(id int, wg *sync.WaitGroup, toReturn chan []mosquescrappers.Prayer) {
+func worker(id int, wg *sync.WaitGroup, toReturn chan []mosquescrappers.Prayer) {
+	c := make(chan []mosquescrappers.Prayer)
+	go mosquescrappers.CrawlBCM(c, id, "2021")
+	x := <-c
+	toReturn <- x
+	wg.Done()
 
-// 	dat, err := ioutil.ReadFile(fmt.Sprintf("cache/data_%d_%d.json", 2021, id))
+}
 
-// 	data := []mosquescrappers.Prayer{}
+func showAllYear(w http.ResponseWriter, h *http.Request) {
+	var wg sync.WaitGroup
 
-// 	_ = json.Unmarshal([]byte(dat), &data)
+	var cacheKey = h.URL.Query().Get("cachekey")
 
-// 	if err != nil {
+	if cacheKey == "" {
+		fmt.Fprint(w, "No ?cachekey present")
+		return
+	}
 
-// 		c := make(chan []mosquescrappers.Prayer)
+	c := make(chan []mosquescrappers.Prayer)
 
-// 		go mosquescrappers.CrawlBCM(c, id)
-// 		x := <-c
-// 		js, _ := json.Marshal(x)
-// 		_ = ioutil.WriteFile(fmt.Sprintf("cache/data_%d_%d.json", 2021, id), js, 0644)
-// 		d2 := []mosquescrappers.Prayer{}
-// 		dat, _ := ioutil.ReadFile(fmt.Sprintf("cache/data_%d_%d.json", 2021, id))
+	var allResults [][]mosquescrappers.Prayer
 
-// 		_ = json.Unmarshal([]byte(dat), &d2)
-// 		toReturn <- d2
-// 		wg.Done()
+	for i := 1; i <= 12; i++ {
+		wg.Add(1)
+		go worker(i, &wg, c)
+		res := <-c
+		allResults = append(allResults, res)
+	}
+	wg.Wait()
 
-// 	} else {
-// 		toReturn <- data
-// 		wg.Done()
-// 		return
-// 	}
-// }
+	w.Header().Set("Content-Type", "application/json")
+	js, _ := json.Marshal(allResults)
 
-// func showAllYear(w http.ResponseWriter, h *http.Request) {
-// 	var wg sync.WaitGroup
+	w.Write(js)
 
-// 	var cacheKey = h.URL.Query().Get("cachekey")
-
-// 	if cacheKey == "" {
-// 		fmt.Fprint(w, "No ?cachekey present")
-// 		return
-// 	}
-
-// 	dat, err := ioutil.ReadFile(fmt.Sprintf("cache/cache_%s.json", cacheKey))
-
-// 	if err == nil {
-// 		var allResults [][]mosquescrappers.Prayer
-
-// 		_ = json.Unmarshal([]byte(dat), &allResults)
-// 		w.Header().Set("Content-Type", "application/json")
-// 		w.Write(dat)
-// 		return
-// 	}
-
-// 	c := make(chan []mosquescrappers.Prayer)
-
-// 	var allResults [][]mosquescrappers.Prayer
-
-// 	for i := 1; i <= 12; i++ {
-// 		wg.Add(1)
-// 		go worker(i, &wg, c)
-// 		res := <-c
-// 		allResults = append(allResults, res)
-// 	}
-// 	wg.Wait()
-
-// 	fmt.Println(allResults)
-
-// 	w.Header().Set("Content-Type", "application/json")
-// 	js, _ := json.Marshal(allResults)
-
-// 	ioutil.WriteFile(fmt.Sprintf("cache/cache_%s.json", cacheKey), js, 0644)
-// 	w.Write(js)
-
-// }
+}
 
 type StrucutedResponse struct {
 	Status string
@@ -142,7 +108,7 @@ func handleISNA(w http.ResponseWriter, h *http.Request) {
 
 func handleRequest() {
 	http.HandleFunc("/", processNAMAZ)
-	// http.HandleFunc("/all", showAllYear)
+	http.HandleFunc("/all", showAllYear)
 	http.HandleFunc("/isna", handleISNA)
 	var PORT = os.Getenv("PORT")
 	if PORT == "" {
@@ -158,4 +124,51 @@ func main() {
 	// })
 
 	handleRequest()
+
+	// fmt.Println("saving to cache")
+	// opt := option.WithCredentialsFile("firebase.json")
+	// app, err := firebase.NewApp(context.Background(), nil, opt)
+	// if err != nil {
+	// 	log.Fatal("error initializing app:")
+	// 	return
+	// }
+
+	// client, err := app.Firestore(context.Background())
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer client.Close()
+
+	// // prayer := mosquescrappers.Prayer{
+	// // 	Fajr:      "12",
+	// // 	FajrJamat: "12",
+	// // 	Sunrise:   "12",
+	// // 	Zuhr:      "12",
+	// // 	Asr:       "12",
+	// // 	Maghrib:   "12",
+	// // 	Isha:      "12",
+	// // 	Day:       "12",
+	// // 	Month:     "12",
+	// // }
+
+	// // prayers := []mosquescrappers.Prayer{
+	// // 	prayer,
+	// // 	prayer,
+	// // }
+
+	// // daa := toSave{
+	// // 	Status:  "OK",
+	// // 	Prayers: prayers,
+	// // }
+
+	// // client.Collection("cache").Doc("tocache02").Set(context.Background(), daa)
+
+	// // dsnap, _ := client.Collection("cache").Doc("tocache02").Get(context.Background())
+
+	// // var dataCustom toSave
+
+	// // dsnap.DataTo(&dataCustom)
+
+	// // fmt.Println(dataCustom.Prayers[0].Day)
+
 }

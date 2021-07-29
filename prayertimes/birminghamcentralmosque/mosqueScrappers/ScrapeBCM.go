@@ -4,13 +4,17 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 	"unicode/utf8"
 
 	firebase "firebase.google.com/go"
 	"github.com/gocolly/colly"
 	"google.golang.org/api/option"
 )
+
+type toSave struct {
+	Status  string
+	Prayers []Prayer
+}
 
 //function is responsible for saving the cache
 func SaveToCache(Prayers []Prayer, monthSaved int, status chan int, cacheKey string) {
@@ -28,20 +32,23 @@ func SaveToCache(Prayers []Prayer, monthSaved int, status chan int, cacheKey str
 	}
 	defer client.Close()
 
-	client.Collection("cache").Doc(fmt.Sprintf("cache_%s_%d", cacheKey, monthSaved)).Set(
-		context.Background(),
-		map[string]interface{}{
-			"status": "ok",
-			"month":  monthSaved,
-			"all":    Prayers,
-		},
-	)
+	var toL = toSave{
+		Status:  "OK",
+		Prayers: Prayers,
+	}
 
-	time.Sleep(10 * time.Second)
+	_, err = client.Collection("cache").Doc(fmt.Sprintf("cache_%s_%d", cacheKey, monthSaved)).Set(
+		context.Background(),
+		toL,
+	)
+	if err != nil {
+		status <- 0
+	}
+
 	status <- 3
 }
 
-func findCache(cacheKey string, monthRequested int, c chan int) {
+func findCache(cacheKey string, monthRequested int, c chan toSave) {
 	opt := option.WithCredentialsFile("firebase.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
@@ -56,36 +63,43 @@ func findCache(cacheKey string, monthRequested int, c chan int) {
 	defer client.Close()
 
 	dsnap, err := client.Collection("cache").Doc(fmt.Sprintf("cache_%s_%d", cacheKey, monthRequested)).Get(context.Background())
-
 	if err != nil {
-		fmt.Println("error")
+		c <- toSave{Status: "err"}
 	}
-	var ddata = dsnap.Data()
+	if dsnap.Exists() {
 
-	fmt.Println(ddata)
+		var dd toSave
+
+		dsnap.DataTo(&dd)
+		c <- dd
+
+	} else {
+		c <- toSave{Status: "err"}
+	}
 
 }
 
 type Prayer struct {
-	Month     string
-	Day       string
-	Sunrise   string
-	Fajr      string
-	FajrJamat string
-	Zuhr      string
-	Asr       string
-	Maghrib   string
-	Isha      string
+	Day       string `firestore:"Day,omitempty"`
+	Month     string `firestore:"Month,omitempty"`
+	Fajr      string `firestore:"Fajr,omitempty"`
+	FajrJamat string `firestore:"FajrJamat,omitempty"`
+	Sunrise   string `firestore:"Sunrise,omitempty"`
+	Zuhr      string `firestore:"Zuhr,omitempty"`
+	Asr       string `firestore:"Asr,omitempty"`
+	Isha      string `firestore:"Isha,omitempty"`
+	Maghrib   string `firestore:"Maghrib,omitempty"`
 }
 
 func CrawlBCM(cc chan []Prayer, monthRequested int, cacheKey string) {
 
-	findCacheChannel := make(chan int)
+	findCacheChannel := make(chan toSave)
 	go findCache(cacheKey, monthRequested, findCacheChannel)
 	didFindCache := <-findCacheChannel
 
-	if didFindCache != 0 {
-		cc <- []Prayer{}
+	if didFindCache.Status != "err" {
+		fmt.Println("cache found")
+		cc <- didFindCache.Prayers
 		return
 	}
 
@@ -158,7 +172,7 @@ func CrawlBCM(cc chan []Prayer, monthRequested int, cacheKey string) {
 		go SaveToCache(Prayers, monthRequested, cindex, cacheKey)
 
 		ltindex := <-cindex
-		fmt.Println(ltindex)
+		fmt.Println(fmt.Sprintf("Cache save result:%d", ltindex))
 
 		cc <- Prayers
 
