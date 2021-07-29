@@ -199,7 +199,9 @@ func processCreate(w http.ResponseWriter, h *http.Request) {
 	go helpers.CreatePost(&p, c)
 	x := <-c
 	// http.Redirect(w, h, fmt.Sprintf("/view?postid=%s", x), 200)
-	fmt.Fprintf(w, x)
+	http.Redirect(w, h, fmt.Sprintf("/view?postid=%s", x), http.StatusSeeOther)
+
+	///fmt.Fprintf(w, x)
 
 }
 
