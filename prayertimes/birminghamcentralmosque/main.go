@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"sync"
 )
 
 func processNAMAZ(w http.ResponseWriter, r *http.Request) {
@@ -43,17 +42,7 @@ func processNAMAZ(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func worker(id int, wg *sync.WaitGroup, toReturn chan []mosquescrappers.Prayer, cacheKey string) {
-	c := make(chan []mosquescrappers.Prayer)
-	go mosquescrappers.CrawlBCM(c, id, cacheKey)
-	x := <-c
-	toReturn <- x
-	wg.Done()
-
-}
-
 func showAllYear(w http.ResponseWriter, h *http.Request) {
-	var wg sync.WaitGroup
 
 	var cacheKey = h.URL.Query().Get("cachekey")
 
@@ -62,20 +51,12 @@ func showAllYear(w http.ResponseWriter, h *http.Request) {
 		return
 	}
 
-	c := make(chan []mosquescrappers.Prayer)
-
-	var allResults [][]mosquescrappers.Prayer
-
-	for i := 1; i <= 12; i++ {
-		wg.Add(1)
-		go worker(i, &wg, c, cacheKey)
-		res := <-c
-		allResults = append(allResults, res)
-	}
-	wg.Wait()
+	cch := make(chan [][]mosquescrappers.Prayer)
+	go mosquescrappers.BCMYear(cacheKey, cch)
+	res := <-cch
 
 	w.Header().Set("Content-Type", "application/json")
-	js, _ := json.Marshal(allResults)
+	js, _ := json.Marshal(res)
 
 	w.Write(js)
 
@@ -119,56 +100,6 @@ func handleRequest() {
 
 func main() {
 
-	// client.Collection("test").Add(context.Background(), map[string]interface{}{
-	// 	"msg": "Hello",
-	// })
-
 	handleRequest()
-
-	// fmt.Println("saving to cache")
-	// opt := option.WithCredentialsFile("firebase.json")
-	// app, err := firebase.NewApp(context.Background(), nil, opt)
-	// if err != nil {
-	// 	log.Fatal("error initializing app:")
-	// 	return
-	// }
-
-	// client, err := app.Firestore(context.Background())
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer client.Close()
-
-	// // prayer := mosquescrappers.Prayer{
-	// // 	Fajr:      "12",
-	// // 	FajrJamat: "12",
-	// // 	Sunrise:   "12",
-	// // 	Zuhr:      "12",
-	// // 	Asr:       "12",
-	// // 	Maghrib:   "12",
-	// // 	Isha:      "12",
-	// // 	Day:       "12",
-	// // 	Month:     "12",
-	// // }
-
-	// // prayers := []mosquescrappers.Prayer{
-	// // 	prayer,
-	// // 	prayer,
-	// // }
-
-	// // daa := toSave{
-	// // 	Status:  "OK",
-	// // 	Prayers: prayers,
-	// // }
-
-	// // client.Collection("cache").Doc("tocache02").Set(context.Background(), daa)
-
-	// // dsnap, _ := client.Collection("cache").Doc("tocache02").Get(context.Background())
-
-	// // var dataCustom toSave
-
-	// // dsnap.DataTo(&dataCustom)
-
-	// // fmt.Println(dataCustom.Prayers[0].Day)
 
 }
