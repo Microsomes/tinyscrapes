@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	helpers "microsomes/tinyscrapes/bcm/mod/helpers"
 	mosquescrappers "microsomes/tinyscrapes/bcm/mod/mosqueScrappers"
 	"net/http"
 	"os"
@@ -182,10 +183,21 @@ func handleCreate(w http.ResponseWriter, h *http.Request) {
 	tepl.Execute(w, "")
 }
 
+func processCreate(w http.ResponseWriter, h *http.Request) {
+	h.ParseForm()
+	title := h.PostForm.Get("title")
+	body := h.PostForm.Get("body")
+
+	helpers.CreatePost()
+
+	fmt.Fprint(w, "d")
+
+}
 func handleRequest() {
 	//all api calls return json
 	http.HandleFunc("/", handleHomePage)
 	http.HandleFunc("/create", handleCreate)
+	http.HandleFunc("/processCreate", processCreate)
 	http.HandleFunc("bcmmonth/", processNAMAZ)
 	http.HandleFunc("/bcmall", showAllYear)
 	http.HandleFunc("/bcmc", currentBCM)
