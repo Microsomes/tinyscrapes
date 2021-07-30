@@ -9,7 +9,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func updatePost(newPost entity.PostR, c chan entity.PostR) {
+func UpdatePost(newPost entity.PostR, c chan entity.PostR) {
 	opt := option.WithCredentialsFile("firebase.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
@@ -23,5 +23,6 @@ func updatePost(newPost entity.PostR, c chan entity.PostR) {
 	}
 	defer client.Close()
 
+	_, err = client.Collection("posts").Doc(newPost.DocID).Set(context.Background(), newPost)
 	c <- newPost
 }

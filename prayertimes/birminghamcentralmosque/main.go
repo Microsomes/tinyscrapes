@@ -262,19 +262,19 @@ func processUpdate(w http.ResponseWriter, h *http.Request) {
 		return
 	}
 
-	newPost := entitiy.PostR{
+	newPost := entity.PostR{
 		Title: title,
 		Body:  body,
 		DocID: postid,
 	}
-	mm := make(chan entity.PostR)
-	go helpers.updatePost(newPost, mm)
-	var xx:<-mm
 
-	fmt.Println(title)
-	fmt.Println(body)
-	fmt.Println(postid)
-	fmt.Fprint(w, "done")
+	mm := make(chan entity.PostR)
+
+	go helpers.UpdatePost(newPost, mm)
+	res := <-mm
+	_ = res
+	http.Redirect(w, h, fmt.Sprintf("/edit?postid=%s", newPost.DocID), http.StatusSeeOther)
+
 }
 
 func handleRequest() {
