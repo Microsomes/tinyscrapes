@@ -9,7 +9,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func ViewPost(postid string, c chan entity.Post) {
+func ViewPost(postid string, c chan entity.PostR) {
 	opt := option.WithCredentialsFile("firebase.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
@@ -27,6 +27,15 @@ func ViewPost(postid string, c chan entity.Post) {
 
 	var p entity.Post
 	r.DataTo(&p)
-	c <- p
+
+	pp := entity.PostR{
+		Title: p.Title,
+		Body:  p.Body,
+		Date:  p.Date,
+		Unix:  p.Unix,
+		DocID: r.Ref.ID,
+	}
+
+	c <- pp
 
 }

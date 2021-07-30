@@ -221,7 +221,7 @@ func processPostView(w http.ResponseWriter, h *http.Request) {
 		fmt.Fprintf(w, "no ?postid present")
 		return
 	}
-	c := make(chan entity.Post)
+	c := make(chan entity.PostR)
 	go helpers.ViewPost(postid, c)
 	x := <-c
 
@@ -230,12 +230,61 @@ func processPostView(w http.ResponseWriter, h *http.Request) {
 
 }
 
+func processEditPost(w http.ResponseWriter, h *http.Request) {
+	var postid = h.URL.Query().Get("postid")
+	if postid == "" {
+		fmt.Fprint(w, "No ?postid found")
+	}
+
+	m := make(chan entity.PostR)
+	go helpers.ViewPost(postid, m)
+	x := <-m
+
+	tepl, _ := template.ParseFiles("templates/tj/edit.html")
+	tepl.Execute(w, x)
+
+}
+
+func processUpdate(w http.ResponseWriter, h *http.Request) {
+	h.ParseForm()
+	title := h.PostForm.Get("title")
+	body := h.PostForm.Get("body")
+	postid := h.PostForm.Get("documentid")
+	if postid == "" {
+		fmt.Fprint(w, "NO postid present")
+		return
+	}
+	m := make(chan entity.PostR)
+	go helpers.ViewPost(postid, m)
+	x := <-m
+	if x.Title == "" {
+		fmt.Fprint(w, "invalid postid, post not found")
+		return
+	}
+
+	newPost := entitiy.PostR{
+		Title: title,
+		Body:  body,
+		DocID: postid,
+	}
+	mm := make(chan entity.PostR)
+	go helpers.updatePost(newPost, mm)
+	var xx:<-mm
+
+	fmt.Println(title)
+	fmt.Println(body)
+	fmt.Println(postid)
+	fmt.Fprint(w, "done")
+}
+
 func handleRequest() {
 	//all api calls return json
 	http.HandleFunc("/", handleHomePage)
 	http.HandleFunc("/create", handleCreate)
 	http.HandleFunc("/processCreate", processCreate)
+	http.HandleFunc("/processUpdate", processUpdate)
 	http.HandleFunc("/view", processPostView)
+	http.HandleFunc("/edit", processEditPost)
 	http.HandleFunc("bcmmonth/", processNAMAZ)
 	http.HandleFunc("/bcmall", showAllYear)
 	http.HandleFunc("/bcmc", currentBCM)
