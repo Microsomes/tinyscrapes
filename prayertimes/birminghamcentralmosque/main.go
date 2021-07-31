@@ -175,7 +175,7 @@ func handleBCM(w http.ResponseWriter, h *http.Request) {
 }
 
 func handleHomePage(w http.ResponseWriter, h *http.Request) {
-	tepl, _ := template.ParseFiles("templates/tj/index.html")
+	tepl, _ := template.ParseFiles("templates/tj/newindex.html")
 	c := make(chan []entity.PostR)
 	go helpers.GetAllPosts(c)
 	x := <-c
