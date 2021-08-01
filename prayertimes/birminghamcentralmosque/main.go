@@ -94,15 +94,21 @@ func handleISNA(w http.ResponseWriter, h *http.Request) {
 func currentBCMLogic(resc chan mosquescrappers.Prayer) {
 	var month = int(time.Now().Month())
 
+	var d = time.Now().Day()
+
+	var newD = fmt.Sprintf("%02d", d) // Prints to stdout '000012'
+
 	c := make(chan []mosquescrappers.Prayer)
 	go mosquescrappers.CrawlBCM(c, month, strconv.Itoa(time.Now().Year()))
 	x := <-c
+
+	_ = x
 
 	var res = mosquescrappers.Prayer{}
 
 	for _, val := range x {
 		var cuday = strings.Split(val.Month, " ")[1]
-		if (cuday) == strconv.Itoa((time.Now().Day())) {
+		if (cuday) == newD {
 			res = val
 		}
 	}
