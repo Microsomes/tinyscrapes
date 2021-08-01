@@ -283,9 +283,27 @@ func processUpdate(w http.ResponseWriter, h *http.Request) {
 
 }
 
+func handleCV(w http.ResponseWriter, h *http.Request) {
+	tepl, _ := template.ParseFiles("templates/tj/cv.html")
+	tepl.Execute(w, "")
+}
+
+func handlePortfolio(w http.ResponseWriter, h *http.Request) {
+	tepl, _ := template.ParseFiles("templates/tj/portfolio.html")
+	tepl.Execute(w, "")
+}
+
+func handleContact(w http.ResponseWriter, h *http.Request) {
+	tepl, _ := template.ParseFiles("templates/tj/contact.html")
+	tepl.Execute(w, "")
+}
+
 func handleRequest() {
 	//all api calls return json
 	http.HandleFunc("/", handleHomePage)
+	http.HandleFunc("/cv", handleCV)
+	http.HandleFunc("/portfolio", handlePortfolio)
+	http.HandleFunc("/contact", handleContact)
 	http.HandleFunc("/create", handleCreate)
 	http.HandleFunc("/processCreate", processCreate)
 	http.HandleFunc("/processUpdate", processUpdate)
