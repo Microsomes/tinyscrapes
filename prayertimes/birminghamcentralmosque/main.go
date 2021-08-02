@@ -284,7 +284,7 @@ func processUpdate(w http.ResponseWriter, h *http.Request) {
 }
 
 func handleCV(w http.ResponseWriter, h *http.Request) {
-	tepl, _ := template.ParseFiles("templates/tj/cv.html")
+	tepl, _ := template.ParseFiles("templates/tj/static/tayyabcv.html")
 	tepl.Execute(w, "")
 }
 
@@ -320,6 +320,9 @@ func handleRequest() {
 	if PORT == "" {
 		PORT = "10000"
 	}
+
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("templates/tj/static"))))
+
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil))
 }
 
