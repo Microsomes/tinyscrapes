@@ -289,8 +289,35 @@ func handleCV(w http.ResponseWriter, h *http.Request) {
 }
 
 func handlePortfolio(w http.ResponseWriter, h *http.Request) {
+
+	type PortfolioContent struct {
+		title   string
+		subline string
+	}
+
+	type PortfolioData struct {
+		headerImage  string
+		name         string
+		technologies []string
+		slug         string
+		extra        *PortfolioContent
+	}
+
+	allPort := []PortfolioData{}
+
+	allPort = append(allPort, PortfolioData{
+		headerImage:  "https://firebasestorage.googleapis.com/v0/b/discord-2a9c9.appspot.com/o/pexels-pixabay-264892.jpg?alt=media&token=c725578a-0321-4689-9dd4-8a3b5badaab0",
+		name:         "Bespoke Cake Editor",
+		technologies: []string{"VUE JS", "NODE JS", "SVG"},
+		slug:         "bespoke-cake-editor",
+		extra: &PortfolioContent{
+			title:   "Cool little Cake Editor",
+			subline: "A commercial project, for Bakerdays.com 6 month- Development Time",
+		},
+	})
+
 	tepl, _ := template.ParseFiles("templates/tj/portfolio.html")
-	tepl.Execute(w, "")
+	tepl.Execute(w, allPort)
 }
 
 func handleContact(w http.ResponseWriter, h *http.Request) {
