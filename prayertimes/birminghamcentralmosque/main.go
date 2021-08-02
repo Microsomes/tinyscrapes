@@ -298,6 +298,11 @@ func handleContact(w http.ResponseWriter, h *http.Request) {
 	tepl.Execute(w, "")
 }
 
+func handleBlog(w http.ResponseWriter, h *http.Request) {
+	tepl, _ := template.ParseFiles("templates/tj/blog.html")
+	tepl.Execute(w, "")
+}
+
 func handleRequest() {
 	//all api calls return json
 	http.HandleFunc("/", handleHomePage)
@@ -307,6 +312,7 @@ func handleRequest() {
 	http.HandleFunc("/create", handleCreate)
 	http.HandleFunc("/processCreate", processCreate)
 	http.HandleFunc("/processUpdate", processUpdate)
+	http.HandleFunc("/blog", handleBlog)
 	http.HandleFunc("/view", processPostView)
 	http.HandleFunc("/edit", processEditPost)
 	http.HandleFunc("bcmmonth/", processNAMAZ)
