@@ -93,6 +93,8 @@
     class="text-white text-center"
     style="
       background: linear-gradient(90.49deg, #2e3234 1.15%, #2e3234 99.27%);
+
+      
     "
   >
     <div class="container mx-auto pb-24 px-4 xl:px-24">
@@ -138,7 +140,35 @@
         </div>
       </header>
 
-      {{.}}
+
+      <div class="mt-12">
+        <div class="flex flex-col font-bold">
+          <h1 class="text-3xl sm:text-5xl text-shadow text-white">
+            {{.PageTitle}}
+          </h1>
+         
+        </div>
+
+        <div class="mt-24 flex flex-wrap justify-evenly space-y-3">
+          {{range .Port}}
+          <div class="flex flex-col rounded-md p-1  h-96 w-2/5 ">
+            <div style="border-radius: 10px;background-size:cover;background-repeat: no-repeat;background-image: url('{{.HeaderImage}}');"
+             class="flex-none flex-grow rouned-md">
+            </div>
+            <div class="flex flex-none flex-col items-center justify-center text-white bg-none h-24 w-full">
+              <p>{{.Name}}</p>
+              {{range .Technologies}}
+                {{.}} /
+              {{end}}
+            </div>
+          </div>
+          {{end}}
+         
+
+
+
+        </div>
+
 
 
      

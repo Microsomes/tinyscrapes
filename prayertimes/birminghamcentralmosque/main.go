@@ -291,33 +291,41 @@ func handleCV(w http.ResponseWriter, h *http.Request) {
 func handlePortfolio(w http.ResponseWriter, h *http.Request) {
 
 	type PortfolioContent struct {
-		title   string
-		subline string
+		Title   string
+		Subline string
 	}
 
 	type PortfolioData struct {
-		headerImage  string
-		name         string
-		technologies []string
-		slug         string
-		extra        *PortfolioContent
+		HeaderImage  string
+		Name         string
+		Technologies []string
+		Slug         string
+		Extra        PortfolioContent
 	}
 
 	allPort := []PortfolioData{}
 
 	allPort = append(allPort, PortfolioData{
-		headerImage:  "https://firebasestorage.googleapis.com/v0/b/discord-2a9c9.appspot.com/o/pexels-pixabay-264892.jpg?alt=media&token=c725578a-0321-4689-9dd4-8a3b5badaab0",
-		name:         "Bespoke Cake Editor",
-		technologies: []string{"VUE JS", "NODE JS", "SVG"},
-		slug:         "bespoke-cake-editor",
-		extra: &PortfolioContent{
-			title:   "Cool little Cake Editor",
-			subline: "A commercial project, for Bakerdays.com 6 month- Development Time",
+		HeaderImage:  "https://sotechnology.co.uk/wp-content/uploads/2021/04/BD_feature@1x.jpg",
+		Name:         "Bespoke Cake Editor",
+		Technologies: []string{"VUE JS", "NODE JS", "SVG"},
+		Slug:         "bespoke-cake-editor",
+		Extra: PortfolioContent{
+			Title:   "Cool little Cake Editor",
+			Subline: "A commercial project, for Bakerdays.com 6 month- Development Time",
 		},
 	})
 
+	type PorfolioPage struct {
+		PageTitle string
+		Port      []PortfolioData
+	}
+
 	tepl, _ := template.ParseFiles("templates/tj/portfolio.html")
-	tepl.Execute(w, allPort)
+	tepl.Execute(w, &PorfolioPage{
+		PageTitle: "Portfolio/Work",
+		Port:      allPort,
+	})
 }
 
 func handleContact(w http.ResponseWriter, h *http.Request) {
