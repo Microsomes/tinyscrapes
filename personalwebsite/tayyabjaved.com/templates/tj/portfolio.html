@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+    />
+
+    <!-- Primary Meta Tags -->
+    <title>🦄 Tayyab Javed- Portfolio</title>
+    <meta name="title" content="🦄 curiousfounders 2.0" />
+    <meta
+      name="description"
+      content="We help you make something people want."
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://nug5l.csb.app/" />
+    <meta property="og:title" content="🦄 curiousfounders 2.0" />
+    <meta
+      property="og:description"
+      content="We help you make something people want."
+    />
+    <meta property="og:image" content="https://imgur.com/tuyTYWy" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://nug5l.csb.app/" />
+    <meta property="twitter:title" content="🦄 curiousfounders 2.0" />
+    <meta
+      property="twitter:description"
+      content="We help you make something people want."
+    />
+    <meta property="twitter:image" content="https://imgur.com/tuyTYWy" />
+
+    <!-- tailwind css -->
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <!-- fonts -->
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap");
+      body {
+        font-family: "Rubik", sans-serif;
+      }
+      .text-accent {
+        color: #f9d3b4;
+      }
+      .text-gradient {
+        background: linear-gradient(180deg, #f9d3b4 0%, #ebded3 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .text-gradient-alt {
+        background: linear-gradient(89.89deg, #eecaad 2.2%, #f9d3b4 96.51%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .text-shadow {
+        text-shadow: 0px 4px 4px 0px #00000040 inset;
+      }
+      .btn-shadow {
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25),
+          0px 4px 4px rgba(0, 0, 0, 0.25);
+      }
+      .card-shadow {
+        box-shadow: -20px 20px 40px rgba(26, 29, 30, 0.2),
+          20px -20px 40px rgba(26, 29, 30, 0.2),
+          -20px -20px 40px rgba(40, 43, 46, 0.9),
+          20px 20px 50px rgba(26, 29, 30, 0.9),
+          inset 1px 1px 2px rgba(40, 43, 46, 0.3),
+          inset -1px -1px 2px rgba(26, 29, 30, 0.5);
+      }
+      .card-shadow-alt {
+        box-shadow: -20px 20px 40px rgba(28, 31, 32, 0.2),
+          20px -20px 40px rgba(28, 31, 32, 0.2),
+          -20px -20px 40px rgba(38, 41, 44, 0.9),
+          20px 20px 50px rgba(28, 31, 32, 0.9),
+          inset 1px 1px 2px rgba(38, 41, 44, 0.3),
+          inset -1px -1px 2px rgba(28, 31, 32, 0.5);
+      }
+      .bg-dark {
+        background: #212426;
+      }
+    </style>
+  </head>
+  <body
+    class="text-white text-center"
+    style="
+      background: linear-gradient(90.49deg, #2e3234 1.15%, #2e3234 99.27%);
+
+      
+    "
+  >
+    <div class="container mx-auto pb-24 px-4 xl:px-24">
+      <header class="flex flex-col sm:flex-row justify-between py-4">
+        <div class="flex items-center">
+          <img src="/assets/icon.png" alt="" />
+          <span class="ml-2 text-2xl font-bold">
+           <a href="/"> TayyabJaved.com- Portfolio </a>
+          </span>
+        </div>
+        <div class="hidden md:flex items-center space-x-6 text-xl">
+            <a
+            href="/"
+            class="text-gradient font-medium hover:opacity-75 duration-100"
+          >
+            Home
+          </a>
+          <a
+          target="_blank"
+
+            href="/cv"
+            class="text-gradient font-medium hover:opacity-75 duration-100"
+          >
+            CV
+          </a>
+          <a
+            href="/portfolio"
+            class="text-gradient font-medium hover:opacity-75 duration-100"
+          >
+            Portfolio
+          </a>
+          <a
+          href="/blog"
+          class="text-gradient font-medium hover:opacity-75 duration-100"
+        >
+          Blog
+        </a>
+          <!-- <button
+            class="w-48 sm:w-64 h-10 sm:h-14 text-accent bg-dark btn-shadow rounded-2xl font-medium hover:shadow-none"
+          >
+            <a href="#">let’s talk 🚀</a>
+          </button> -->
+        </div>
+      </header>
+
+
+      <div class="mt-12">
+        <div class="flex flex-col font-bold">
+          <h1 class="text-3xl sm:text-5xl text-shadow text-white">
+            {{.PageTitle}}
+          </h1>
+         
+        </div>
+
+        <div class="mt-24 flex flex-wrap justify-evenly space-y-3">
+          {{range .Port}}
+          <div class="flex flex-col rounded-md p-1  h-96 w-2/5 ">
+            <div style="border-radius: 10px;background-size:cover;background-repeat: no-repeat;background-image: url('{{.HeaderImage}}');"
+             class="flex-none flex-grow rouned-md">
+            </div>
+            <div class="flex flex-none flex-col items-center justify-center text-white bg-none h-24 w-full">
+              <p>{{.Name}}</p>
+              {{range .Technologies}}
+                {{.}} /
+              {{end}}
+            </div>
+          </div>
+          {{end}}
+         
+
+
+
+        </div>
+
+
+
+     
+      <footer class="mt-24">
+        <br /><a
+          href="https://twitter.com/tayyabjav"
+          class="hover:opacity-75 duration-100"
+          >@TayyabJav</a
+        >
+      </footer>
+    </div>
+  </body>
+</html>
