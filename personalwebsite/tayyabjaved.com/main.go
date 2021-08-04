@@ -350,7 +350,7 @@ func handleRequest() {
 	http.HandleFunc("/blog", handleBlog)
 	http.HandleFunc("/view", processPostView)
 	http.HandleFunc("/edit", processEditPost)
-	http.HandleFunc("bcmmonth/", processNAMAZ)
+	http.HandleFunc("/bcmmonth/", processNAMAZ)
 	http.HandleFunc("/bcmall", showAllYear)
 	http.HandleFunc("/bcmc", currentBCM)
 
