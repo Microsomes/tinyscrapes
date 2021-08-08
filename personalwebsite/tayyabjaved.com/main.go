@@ -456,9 +456,16 @@ func handleCountry(w http.ResponseWriter, h *http.Request) {
 
 }
 
+func HandleHowTo(w http.ResponseWriter, h *http.Request) {
+	tepl, _ := template.ParseFiles("templates/tj/howto/webscrapping/index.html")
+	tepl.Execute(w, "")
+}
+
 func handleRequest() {
 	//all api calls return json
 	http.HandleFunc("/", handleHomePage)
+
+	http.HandleFunc("/howto/scrape", HandleHowTo)
 
 	//for the weather app
 	http.HandleFunc("/cities", handleCity)
