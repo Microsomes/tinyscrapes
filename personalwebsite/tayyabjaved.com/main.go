@@ -302,6 +302,8 @@ func handlePortfolio(w http.ResponseWriter, h *http.Request) {
 		Technologies []string
 		Slug         string
 		Extra        PortfolioContent
+		SampleLink   string
+		IsSample     bool
 	}
 
 	allPort := []PortfolioData{}
@@ -311,6 +313,21 @@ func handlePortfolio(w http.ResponseWriter, h *http.Request) {
 		Name:         "Bespoke Cake Editor",
 		Technologies: []string{"VUE JS", "NODE JS", "SVG"},
 		Slug:         "bespoke-cake-editor",
+		SampleLink:   "https://upbeat-curie-5573c6.netlify.app/?test=dd",
+		IsSample:     true,
+		Extra: PortfolioContent{
+			Title:   "Cool little Cake Editor",
+			Subline: "A commercial project, for Bakerdays.com 6 month- Development Time",
+		},
+	})
+
+	allPort = append(allPort, PortfolioData{
+		HeaderImage:  "https://sotechnology.co.uk/wp-content/uploads/2021/04/BD_feature@1x.jpg",
+		Name:         "Bespoke Cake Editor",
+		Technologies: []string{"VUE JS", "NODE JS", "SVG"},
+		Slug:         "bespoke-cake-editor",
+		SampleLink:   "https://upbeat-curie-5573c6.netlify.app/?test=dd",
+		IsSample:     false,
 		Extra: PortfolioContent{
 			Title:   "Cool little Cake Editor",
 			Subline: "A commercial project, for Bakerdays.com 6 month- Development Time",
