@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	entity "microsomes/tinyscrapes/bcm/mod/entitiy"
 	helpers "microsomes/tinyscrapes/bcm/mod/helpers"
@@ -338,9 +339,97 @@ func handleBlog(w http.ResponseWriter, h *http.Request) {
 	tepl.Execute(w, "")
 }
 
+func openCountries() (*os.File, bool) {
+	jsonFile, err := os.Open("countries.json")
+	var isError bool
+	if err != nil {
+		isError = true
+	} else {
+		isError = false
+	}
+	return jsonFile, isError
+}
+
+func handleCity(w http.ResponseWriter, h *http.Request) {
+	country := h.URL.Query().Get("country")
+	jsonFile, isError := openCountries()
+	if isError {
+		fmt.Fprint(w, "Something went wrong try again later")
+		return
+	}
+	fmt.Println("Successfully Opened users.json")
+
+	// defer the closing of our jsonFile so that we can parse it later on
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var d map[string][]string
+
+	err2 := json.Unmarshal(byteValue, &d)
+	if err2 != nil {
+		fmt.Println(err2.Error())
+	}
+
+	type City struct {
+		Country string
+		Name    string
+	}
+
+	var foundCities []City
+
+	for i, val := range d {
+		if i == country {
+			for _, v := range val {
+				foundCities = append(foundCities, City{Name: v, Country: country})
+			}
+		}
+	}
+
+	js, _ := json.Marshal(foundCities)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}
+
+func handleCountry(w http.ResponseWriter, h *http.Request) {
+	jsonFile, isError := openCountries()
+	if isError {
+		fmt.Fprint(w, "Something went wrong try again later")
+		return
+	}
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var d map[string]interface{}
+	json.Unmarshal(byteValue, &d)
+
+	type Countries struct {
+		CountryName string
+	}
+
+	var allCountries []Countries
+
+	for country := range d {
+		allCountries = append(allCountries, Countries{CountryName: country})
+	}
+
+	js, _ := json.Marshal(allCountries)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+
+}
+
 func handleRequest() {
 	//all api calls return json
 	http.HandleFunc("/", handleHomePage)
+
+	//for the weather app
+	http.HandleFunc("/cities", handleCity)
+	http.HandleFunc("/countries", handleCountry)
+
 	http.HandleFunc("/cv", handleCV)
 	http.HandleFunc("/portfolio", handlePortfolio)
 	http.HandleFunc("/contact", handleContact)
@@ -350,10 +439,10 @@ func handleRequest() {
 	http.HandleFunc("/blog", handleBlog)
 	http.HandleFunc("/view", processPostView)
 	http.HandleFunc("/edit", processEditPost)
-	http.HandleFunc("/bcmmonth/", processNAMAZ)
+	http.HandleFunc("bcmmonth/", processNAMAZ)
 	http.HandleFunc("/bcmall", showAllYear)
 	http.HandleFunc("/bcmc", currentBCM)
-
+	//
 	//these generate templates
 	http.HandleFunc("/bcm", handleBCM)
 	http.HandleFunc("/isna", handleISNA)
