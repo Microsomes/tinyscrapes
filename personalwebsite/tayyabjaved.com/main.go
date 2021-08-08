@@ -304,11 +304,13 @@ func handlePortfolio(w http.ResponseWriter, h *http.Request) {
 		Extra        PortfolioContent
 		SampleLink   string
 		IsSample     bool
+		Year         string
 	}
 
 	allPort := []PortfolioData{}
 
 	allPort = append(allPort, PortfolioData{
+		Year:         "2019-2020",
 		HeaderImage:  "https://sotechnology.co.uk/wp-content/uploads/2021/04/BD_feature@1x.jpg",
 		Name:         "Bespoke Cake Editor",
 		Technologies: []string{"VUE JS", "NODE JS", "SVG"},
@@ -322,14 +324,29 @@ func handlePortfolio(w http.ResponseWriter, h *http.Request) {
 	})
 
 	allPort = append(allPort, PortfolioData{
-		HeaderImage:  "https://sotechnology.co.uk/wp-content/uploads/2021/04/BD_feature@1x.jpg",
-		Name:         "Bespoke Cake Editor",
-		Technologies: []string{"VUE JS", "NODE JS", "SVG"},
+		Year:         "2019-2020",
+		HeaderImage:  "https://sotechnology.co.uk/wp-content/uploads/2020/04/HN_feature.jpg",
+		Name:         "Historic Newspapers",
+		Technologies: []string{"Wordpress", "WooCommerce", "PHP"},
 		Slug:         "bespoke-cake-editor",
-		SampleLink:   "https://upbeat-curie-5573c6.netlify.app/?test=dd",
+		SampleLink:   "https://www.historic-newspapers.co.uk/",
+		IsSample:     true,
+		Extra: PortfolioContent{
+			Title:   "Historic NewsPapers",
+			Subline: "A commercial project, for Bakerdays.com 6 month- Development Time",
+		},
+	})
+
+	allPort = append(allPort, PortfolioData{
+		Year:         "2018-2019",
+		HeaderImage:  "https://firebasestorage.googleapis.com/v0/b/discord-2a9c9.appspot.com/o/pexels-life-of-pix-2391.jpg?alt=media&token=d80c6a75-6950-4e27-8f6f-19fcc60dc36a",
+		Name:         "(Bespoke) Factory Fulfillment Software",
+		Technologies: []string{"NODE JS", "PHP", "Vue JS"},
+		Slug:         "factory-fullfillment",
+		SampleLink:   "https://www.historic-newspapers.co.uk/",
 		IsSample:     false,
 		Extra: PortfolioContent{
-			Title:   "Cool little Cake Editor",
+			Title:   "Historic NewsPapers",
 			Subline: "A commercial project, for Bakerdays.com 6 month- Development Time",
 		},
 	})
