@@ -311,7 +311,7 @@ func handlePortfolio(w http.ResponseWriter, h *http.Request) {
 
 	allPort = append(allPort, PortfolioData{
 		Year:         "2019-2020",
-		HeaderImage:  "https://sotechnology.co.uk/wp-content/uploads/2021/04/BD_feature@1x.jpg",
+		HeaderImage:  "https://firebasestorage.googleapis.com/v0/b/discord-2a9c9.appspot.com/o/img2.PNG?alt=media&token=c07079f6-6379-4d99-9a45-596feed77c3a",
 		Name:         "Bespoke Cake Editor",
 		Technologies: []string{"VUE JS", "NODE JS", "SVG"},
 		Slug:         "bespoke-cake-editor",
@@ -348,6 +348,20 @@ func handlePortfolio(w http.ResponseWriter, h *http.Request) {
 		Extra: PortfolioContent{
 			Title:   "Historic NewsPapers",
 			Subline: "A commercial project, for Bakerdays.com 6 month- Development Time",
+		},
+	})
+
+	allPort = append(allPort, PortfolioData{
+		Year:         "2017",
+		HeaderImage:  "https://firebasestorage.googleapis.com/v0/b/discord-2a9c9.appspot.com/o/IMG.PNG?alt=media&token=945e5b4f-6d8f-4189-b98b-2157fe38625e",
+		Name:         "(Bespoke) E-Commerce Website",
+		Technologies: []string{"Shopify", "Laravel/PHP", "Vue JS"},
+		Slug:         "factory-fullfillment",
+		SampleLink:   "https://colorwayadv.web.app/#/",
+		IsSample:     true,
+		Extra: PortfolioContent{
+			Title:   "",
+			Subline: "",
 		},
 	})
 
