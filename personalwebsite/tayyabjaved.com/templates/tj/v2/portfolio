@@ -1,0 +1,7 @@
+{{define "title"}}
+    Tayyab Javeds Website
+{{end}}
+
+{{define "content"}}
+    Tayyab Javeds Website
+{{end}}
