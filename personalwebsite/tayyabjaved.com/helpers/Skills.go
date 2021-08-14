@@ -17,6 +17,16 @@ type Skills struct {
 	Samples         []SkillSample
 }
 
+type Wrap struct {
+	Data []Skills
+	Type string
+}
+
+type ToReturn struct {
+	Status    string
+	AllSkills []Wrap
+}
+
 func GetAllSkills(c chan []Skills) {
 	//allskills slice
 	var allSkills []Skills
@@ -51,7 +61,7 @@ func GetAllSkills(c chan []Skills) {
 	})
 	allSkills = append(allSkills, Skills{
 		Type:            "BACKEND",
-		Name:            "GO LANG",
+		Name:            "GOLANG",
 		AmountOfWebsite: 1,
 		ExperienceYears: 1,
 		Url:             "https://golang.org/",
@@ -78,6 +88,30 @@ func GetAllSkills(c chan []Skills) {
 				Type:    "personal",
 			},
 		},
+	})
+
+	allSkills = append(allSkills, Skills{
+		Type:            "MOBILE",
+		Name:            "DART/Flutter",
+		AmountOfWebsite: 3,
+		ExperienceYears: 4,
+		Url:             "https://flutter.dev/",
+	})
+
+	allSkills = append(allSkills, Skills{
+		Type:            "MOBILE",
+		Name:            "JAVA",
+		AmountOfWebsite: 3,
+		ExperienceYears: 4,
+		Url:             "https://www.java.com/en/",
+	})
+
+	allSkills = append(allSkills, Skills{
+		Type:            "MOBILE",
+		Name:            "KOTLIN",
+		AmountOfWebsite: 3,
+		ExperienceYears: 4,
+		Url:             "https://kotlinlang.org/",
 	})
 
 	allSkills = append(allSkills, Skills{
@@ -156,6 +190,59 @@ func GetAllSkills(c chan []Skills) {
 		Samples:         []SkillSample{},
 	})
 
+	allSkills = append(allSkills, Skills{
+		Type:            "DEVOPS",
+		Name:            "Git",
+		AmountOfWebsite: 5,
+		ExperienceYears: 5,
+		Url:             "https://reactjs.org/",
+		Samples:         []SkillSample{},
+	})
+
+	allSkills = append(allSkills, Skills{
+		Type:            "DEVOPS",
+		Name:            "Docker",
+		AmountOfWebsite: 5,
+		ExperienceYears: 5,
+		Url:             "https://reactjs.org/",
+		Samples:         []SkillSample{},
+	})
+
+	allSkills = append(allSkills, Skills{
+		Type:            "DEVOPS",
+		Name:            "AWS/GCP",
+		AmountOfWebsite: 5,
+		ExperienceYears: 5,
+		Url:             "https://reactjs.org/",
+		Samples:         []SkillSample{},
+	})
+
+	allSkills = append(allSkills, Skills{
+		Type:            "ECOMM",
+		Name:            "Shopify/App/Theme",
+		AmountOfWebsite: 5,
+		ExperienceYears: 2,
+		Url:             "https://www.shopify.co.uk/",
+		Samples:         []SkillSample{},
+	})
+	allSkills = append(allSkills, Skills{
+		Type:            "ECOMM",
+		Name:            "Woocommerce/Wordpress",
+		AmountOfWebsite: 5,
+		ExperienceYears: 2,
+		Url:             "https://woocommerce.com/",
+		Samples:         []SkillSample{},
+	})
+
+	allSkills = append(allSkills, Skills{
+		Type:            "ECOMM",
+		Name:            "Magento/Theme/App Development",
+		AmountOfWebsite: 5,
+		ExperienceYears: 2,
+		Url:             "https://magento.com/",
+		Samples:         []SkillSample{},
+	})
+
 	c <- allSkills
 
 }
@@ -164,14 +251,51 @@ func GetSkillsWithType(Type string) []Skills {
 	c := make(chan []Skills)
 	go GetAllSkills(c)
 	x := <-c
-
 	var newList []Skills
-
 	for _, e := range x {
 		if e.Type == Type {
 			newList = append(newList, e)
 		}
 	}
-
 	return newList
+}
+
+func GetSkills() ToReturn {
+	frontend := GetSkillsWithType("FRONTEND")
+	backend := GetSkillsWithType("BACKEND")
+	database := GetSkillsWithType("DATABASE")
+	devops := GetSkillsWithType("DEVOPS")
+	mobile := GetSkillsWithType("MOBILE")
+	ecom := GetSkillsWithType("ECOMM")
+
+	return ToReturn{
+		Status: "OK",
+		AllSkills: []Wrap{
+			Wrap{
+				Data: frontend,
+				Type: "FRONTEND",
+			},
+			Wrap{
+				Data: backend,
+				Type: "BACKEND",
+			},
+			Wrap{
+				Data: database,
+				Type: "DATABASE",
+			},
+			Wrap{
+				Data: mobile,
+				Type: "MOBILE",
+			},
+			Wrap{
+				Data: devops,
+				Type: "DEVOPS",
+			},
+			Wrap{
+				Data: ecom,
+				Type: "E-commerce",
+			},
+		},
+	}
+
 }

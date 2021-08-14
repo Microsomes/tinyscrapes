@@ -5,6 +5,12 @@
 {{define "content"}}
     
 <div class="container mx-auto pb-24 px-4 xl:px-24">
+
+  <div class="flex items-center justify-center mt-6 mb-6 ">
+    <div style="background-size: contain;background-repeat: no-repeat;background-image: url('https://firebasestorage.googleapis.com/v0/b/discord-2a9c9.appspot.com/o/me.jpeg?alt=media&token=35622775-4f89-4a0f-bed9-ec7301d031ac');" 
+    class="h-52 w-52  sm:h-96 sm:w-96 shadow-xl  bg-white rounded-full">
+    </div>
+      </div>
     
     <section>
       <div class="mt-12">
@@ -23,6 +29,7 @@
             Software Developer
           </h1>
         </div>
+
        
 
         <button
@@ -32,12 +39,38 @@
         </button>
       
       </div>
+      <div class="h-2"></div>
+      <h2 class="text-3xl mt-12 sm:text-5xl text-shadow text-white">
+        Tech Stack
+      </h2>
 
-      <div style="height:500px" class="mt-6 rounded-md bg-white flex justify-center items-center">
-          <p>Skillz</p>
+      <div  class="mt-1 bg-white mt-6 flex-col p-6 space-y-4 text-black rounded-md  flex justify-center ">
+        {{range .AllSkills}}
+        <div class="xl:flex lg:flex md:flex sm:flex w-full justify-center items-center">
+          <div class="w-52"></div>  
+          <div class="w-52 flex items-center justify-start ">
+              <p class="text-black text-2xl">{{.Type}}---></p>
+            </div>
+            <div class="flex-grow mt-2 xl:flex lg:flex md:flex sm:flex xl:space-y-0 lg:space-y-0 md:space-y-0 sm:space-y-0  space-y-4 items-center space-x-4 text-white flex-wrap ">
+              {{range .Data}}
+              <div class="bg-black p-2 rounded-md shadow-xl">
+              <p> 
+                {{.Name}} ({{.ExperienceYears}} Yrs)
+                </p>
+              </div>
+                {{end}}
+            </div>
+        </div>
+        {{end}}
+       
+      
+</div>
+
+
+
       </div>
 
-      <h2 class="text-3xl mt-12 sm:text-5xl text-shadow text-white">
+      <h2 class="text-3xl mt-2 sm:text-5xl text-shadow text-white">
         Examples of Previous Works
       </h2>
      

@@ -482,32 +482,13 @@ func MakeHappen() {
 //handle the new home page with new home page
 func handleNewHomePage(w http.ResponseWriter, h *http.Request) {
 	tepl, _ := template.New("base").ParseFiles("templates/tj/v2/home.html", "templates/tj/base2.html")
-	tepl.Execute(w, "")
+	x := helpers.GetSkills()
+	tepl.Execute(w, x)
 
 }
 
 func handleSkills(w http.ResponseWriter, h *http.Request) {
-	// c := make(chan []helpers.Skills)
-	// go helpers.GetAllSkills(c)
-	// x := <-c
-
-	backend := helpers.GetSkillsWithType("BACKEND")
-	frontend := helpers.GetSkillsWithType("FRONTEND")
-	database := helpers.GetSkillsWithType("DATABASE")
-
-	type ToReturn struct {
-		Status   string
-		Frontend []helpers.Skills
-		Backend  []helpers.Skills
-		Database []helpers.Skills
-	}
-
-	js, _ := json.Marshal(&ToReturn{
-		Status:   "OK",
-		Frontend: frontend,
-		Backend:  backend,
-		Database: database,
-	})
+	js, _ := json.Marshal(helpers.GetSkills())
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
 }
