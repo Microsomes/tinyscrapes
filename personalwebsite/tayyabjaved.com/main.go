@@ -325,7 +325,7 @@ func handlePortfolio(w http.ResponseWriter, h *http.Request) {
 
 	allPort = append(allPort, PortfolioData{
 		Year:         "2019-2020",
-		HeaderImage:  "https://sotechnology.co.uk/wp-content/uploads/2020/04/HN_feature.jpg",
+		HeaderImage:  "https://firebasestorage.googleapis.com/v0/b/discord-2a9c9.appspot.com/o/img3.PNG?alt=media&token=4aa0b816-7826-4047-8766-0b7cb1ba555f",
 		Name:         "Historic Newspapers",
 		Technologies: []string{"Wordpress", "WooCommerce", "PHP"},
 		Slug:         "bespoke-cake-editor",
@@ -339,7 +339,7 @@ func handlePortfolio(w http.ResponseWriter, h *http.Request) {
 
 	allPort = append(allPort, PortfolioData{
 		Year:         "2018-2019",
-		HeaderImage:  "https://firebasestorage.googleapis.com/v0/b/discord-2a9c9.appspot.com/o/pexels-life-of-pix-2391.jpg?alt=media&token=d80c6a75-6950-4e27-8f6f-19fcc60dc36a",
+		HeaderImage:  "https://firebasestorage.googleapis.com/v0/b/discord-2a9c9.appspot.com/o/img4.PNG?alt=media&token=cfa55a8b-4a8e-45a6-9d56-eb6adfbc729c",
 		Name:         "(Bespoke) Factory Fulfillment Software",
 		Technologies: []string{"NODE JS", "PHP", "Vue JS"},
 		Slug:         "factory-fullfillment",
