@@ -4,5 +4,15 @@ Tayyabs Blog
 
 
 {{define "content"}}
-    njkn
+    <h1 class="text-xl">Blogs are hosted on my Hashnode</h1>
+    <a target="_blank" class="text-center mt-2 underline" href="https://hashnode.com/@Microsomes">Visit Me There</a>
+
+    <div class="mt-6 space-y-3">
+    {{range .Data.Data.User.Publication.Posts}}
+        <div>
+            <a target="_blank" href="https://tayyabjaved.hashnode.dev/{{.Slug}}"><p class="text-2xl">{{.Title}}</p></a>
+        </div>
+    {{end}}
+    </div>
+
 {{end}}

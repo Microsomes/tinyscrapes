@@ -325,10 +325,13 @@ func handleBlog(w http.ResponseWriter, h *http.Request) {
 
 func handleBlog2(w http.ResponseWriter, h *http.Request) {
 	tepl, _ := template.New("base").ParseFiles("templates/tj/v2/blog.html", "templates/tj/base2.html")
+	blogs := helpers.GetBlogs()
+
 	tepl.Execute(w, Standardv2Return{
 		Route:  "/blog",
 		IsHome: false,
 		IsBlog: true,
+		Data:   blogs,
 	})
 }
 
