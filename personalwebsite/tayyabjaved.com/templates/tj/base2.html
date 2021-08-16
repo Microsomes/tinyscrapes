@@ -96,8 +96,19 @@ style="
 >
     <div class="h-24 flex justify-end p-12" >
         <div class="flex space-x-4 text-2xl cursor-pointer">
+            {{if not .IsHome}}
+            <a href="/"><div class="hover:text-gray-400"> Home </div></a>
+            {{end}}
+            {{if not .IsPort}}
             <a href="/portfolio"><div class="hover:text-gray-400"> Portfolio </div></a>
+            {{else}}
+            <a href="/portfolio"><div class="hover:text-gray-400 underline"> Portfolio </div></a>
+            {{end}}
+            {{if not .IsBlog}}
             <a href="/blog"><div class="hover:text-gray-400"> Blog </div></a>
+            {{else}}
+            <a href="/blog"><div class="hover:text-gray-400 underline"> Blog </div></a>
+            {{end}}
         </div>
     </div>
     {{template "content" .}}

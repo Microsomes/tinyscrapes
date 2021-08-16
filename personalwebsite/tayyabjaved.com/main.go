@@ -16,6 +16,14 @@ import (
 	"time"
 )
 
+type Standardv2Return struct {
+	Route  string
+	Data   interface{}
+	IsHome bool
+	IsBlog bool
+	IsPort bool
+}
+
 func processNAMAZ(w http.ResponseWriter, r *http.Request) {
 	var cacheKey = r.URL.Query().Get("cachekey")
 
@@ -315,6 +323,15 @@ func handleBlog(w http.ResponseWriter, h *http.Request) {
 	tepl.Execute(w, "")
 }
 
+func handleBlog2(w http.ResponseWriter, h *http.Request) {
+	tepl, _ := template.New("base").ParseFiles("templates/tj/v2/blog.html", "templates/tj/base2.html")
+	tepl.Execute(w, Standardv2Return{
+		Route:  "/blog",
+		IsHome: false,
+		IsBlog: true,
+	})
+}
+
 func openCountries() (*os.File, bool) {
 	jsonFile, err := os.Open("countries.json")
 	var isError bool
@@ -411,7 +428,11 @@ func MakeHappen() {
 func handleNewHomePage(w http.ResponseWriter, h *http.Request) {
 	tepl, _ := template.New("base").ParseFiles("templates/tj/v2/home.html", "templates/tj/base2.html")
 	x := helpers.GetSkills()
-	tepl.Execute(w, x)
+	tepl.Execute(w, Standardv2Return{
+		Route:  "/",
+		Data:   x,
+		IsHome: true,
+	})
 
 }
 
@@ -419,6 +440,26 @@ func handleSkills(w http.ResponseWriter, h *http.Request) {
 	js, _ := json.Marshal(helpers.GetSkills())
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
+}
+
+func handlePortfolio2(w http.ResponseWriter, h *http.Request) {
+	//gets all portfolio data
+	x := helpers.GetPort()
+	type PorfolioPage struct {
+		PageTitle string
+		Port      []helpers.PortfolioData
+	}
+	tepl, _ := template.New("base").ParseFiles("templates/tj/v2/portfolio.html", "templates/tj/base2.html")
+	pp := PorfolioPage{
+		PageTitle: "Portfolio",
+		Port:      x,
+	}
+
+	tepl.Execute(w, Standardv2Return{
+		Route:  "/portfolio",
+		Data:   pp,
+		IsPort: true,
+	})
 }
 
 func handleRequest() {
@@ -437,12 +478,15 @@ func handleRequest() {
 	http.HandleFunc("/countries", handleCountry)
 
 	http.HandleFunc("/cv", handleCV)
-	http.HandleFunc("/portfolio", handlePortfolio)
+
+	http.HandleFunc("/portfolio", handlePortfolio2)
+	// http.HandleFunc("/portfolio2", handlePortfolio2)
+
 	http.HandleFunc("/contact", handleContact)
 	http.HandleFunc("/create", handleCreate)
 	http.HandleFunc("/processCreate", processCreate)
 	http.HandleFunc("/processUpdate", processUpdate)
-	http.HandleFunc("/blog", handleBlog)
+	http.HandleFunc("/blog", handleBlog2)
 	http.HandleFunc("/view", processPostView)
 	http.HandleFunc("/edit", processEditPost)
 	http.HandleFunc("bcmmonth/", processNAMAZ)
