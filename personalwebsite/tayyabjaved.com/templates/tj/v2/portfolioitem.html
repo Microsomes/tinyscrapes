@@ -17,17 +17,32 @@ Tayyabs-{{.Data.Name}}
 
     {{if .Data.IsSample}}
     <div class="flex items-center justify-center mt-24">
-    <a href="{{.Data.SampleLink}}">
+    <a target="_blank" href="{{.Data.SampleLink}}">
     <button class="hover:bg-blue-300 bg-blue-600 h-12 rounded-md w-96">
         Visit Website
     </button>
     </a>
-    
     </div>
     {{end}}
 
 </div>
 
-<div style="height:4000px"></div>
+<div style="height:4000px">
+
+    {{if.Data.IsScreenShot}}
+    <div class="flex flex-wrap items-center justify-center">
+    {{range .Data.Screenshots}}
+  <div class="p-10">  
+    <!--Card 1-->
+    <div class="max-w-sm rounded overflow-hidden shadow-lg">
+      <img class="w-full" src="{{.}}" alt="Mountain">  
+    </div>
+  </div>
+    {{end}}
+    </div>
+    {{end}}
+    
+
+</div>
 
 {{end}}
