@@ -5,6 +5,11 @@ type PortfolioContent struct {
 	Subline string
 }
 
+type PortfolioBlog struct {
+	Slug     string
+	HostName string
+}
+
 type PortfolioData struct {
 	HeaderImage  string
 	Name         string
@@ -17,6 +22,8 @@ type PortfolioData struct {
 	Subline      string
 	Screenshots  [3]string
 	IsScreenShot bool
+	DetailID     string
+	BlogContent  PortfolioBlog
 }
 
 func GetPort() []PortfolioData {
@@ -37,6 +44,11 @@ func GetPort() []PortfolioData {
 			"https://firebasestorage.googleapis.com/v0/b/discord-2a9c9.appspot.com/o/historicnewspapers%2FScreenshot%20from%202021-08-18%2012-18-18.png?alt=media&token=db14e5c5-7f78-43e5-a36a-1f355a233460",
 		},
 		IsScreenShot: true,
+		DetailID:     "",
+		BlogContent: PortfolioBlog{
+			Slug:     "historic-newspapers",
+			HostName: "tayyabjaved",
+		},
 	})
 
 	allPort = append(allPort, PortfolioData{
@@ -71,6 +83,9 @@ func GetPort() []PortfolioData {
 			"https://firebasestorage.googleapis.com/v0/b/discord-2a9c9.appspot.com/o/timesheet%2FScreenshot%20from%202021-08-18%2012-30-53.png?alt=media&token=78d2a526-1f70-45af-ba1c-414ce39998f5",
 		},
 		IsScreenShot: true,
+		BlogContent: PortfolioBlog{
+			Slug: "",
+		},
 	})
 
 	allPort = append(allPort, PortfolioData{

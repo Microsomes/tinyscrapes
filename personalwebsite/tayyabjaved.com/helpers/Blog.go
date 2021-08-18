@@ -53,3 +53,7 @@ func GetBlogs() BlogResult {
 
 	return objMap
 }
+
+func GetBlogBySlugandHostname(slug, hostname string) {
+
+}
