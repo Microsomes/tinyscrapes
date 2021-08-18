@@ -3,10 +3,12 @@ Tayyabs-{{.Data.Name}}
 {{end}}
 
 {{define "content"}}
-<div class="h-24 pl-12 cursor-pointer bg-white flex items-center">
+
+<a href="/portfolio" class="block"><div class="h-24 pl-12 cursor-pointer bg-white flex items-center">
     <svg class="w-12 h-12 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg>
     <p class="text-black text-2xl">Back</p>
-</div>
+</div></a>
+
 <div class="bg-white flex  justify-center" style="height:500px">
     <h1 class="text-black text-5xl mt-24">{{.Data.Name}}</h1>
 </div>
