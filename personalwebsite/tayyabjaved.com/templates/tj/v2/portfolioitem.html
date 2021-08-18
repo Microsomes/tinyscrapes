@@ -17,7 +17,12 @@ Tayyabs-{{.Data.Name}}
 
     {{if .Data.IsSample}}
     <div class="flex items-center justify-center mt-24">
-    <button class="hover:bg-blue-300 bg-blue-600 h-12 rounded-md w-96">Visit Website</button>
+    <a href="{{.Data.SampleLink}}">
+    <button class="hover:bg-blue-300 bg-blue-600 h-12 rounded-md w-96">
+        Visit Website
+    </button>
+    </a>
+    
     </div>
     {{end}}
 
