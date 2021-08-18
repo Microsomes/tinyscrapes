@@ -468,8 +468,10 @@ func handlePortfolio2(w http.ResponseWriter, h *http.Request, ps httprouter.Para
 }
 
 func handleSinglePortfolio(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
+	// x := helpers.FindBlogBySlug(ps.ByName("slug"))
 
-	fmt.Fprintf(w, ps.ByName("slug"))
+	tepl, _ := template.ParseFiles("templates/tj/v2/blogitem.html")
+	tepl.Execute(w, "")
 }
 
 func handleRequest() {
