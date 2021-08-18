@@ -94,7 +94,12 @@ style="
   background: linear-gradient(90.49deg, #2e3234 1.15%, #2e3234 99.27%);
 "
 >
-    <div class="h-24 flex justify-end p-12" >
+{{if .IsWhite}}
+    <div class="h-24 bg-white text-black flex justify-end p-12" >
+        {{else}}
+        <div class="h-24  flex justify-end p-12" >
+{{end}}
+
         <div class="flex space-x-4 text-2xl cursor-pointer">
             {{if not .IsHome}}
             <a href="/"><div class="hover:text-gray-400"> Home </div></a>

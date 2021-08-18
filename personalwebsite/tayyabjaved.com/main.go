@@ -19,11 +19,12 @@ import (
 )
 
 type Standardv2Return struct {
-	Route  string
-	Data   interface{}
-	IsHome bool
-	IsBlog bool
-	IsPort bool
+	Route   string
+	Data    interface{}
+	IsHome  bool
+	IsBlog  bool
+	IsPort  bool
+	IsWhite bool
 }
 
 func processNAMAZ(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -468,10 +469,14 @@ func handlePortfolio2(w http.ResponseWriter, h *http.Request, ps httprouter.Para
 }
 
 func handleSinglePortfolio(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
-	// x := helpers.FindBlogBySlug(ps.ByName("slug"))
+	x := helpers.FindBlogBySlug(ps.ByName("slug"))
 
-	tepl, _ := template.ParseFiles("templates/tj/v2/blogitem.html")
-	tepl.Execute(w, "")
+	tepl, _ := template.New("base").ParseFiles("templates/tj/v2/portfolioitem.html", "templates/tj/base2.html")
+	tepl.Execute(w, Standardv2Return{
+		Route:   "/blogitem",
+		Data:    x,
+		IsWhite: true,
+	})
 }
 
 func handleRequest() {
