@@ -26,7 +26,7 @@ type Standardv2Return struct {
 	IsPort bool
 }
 
-func processNAMAZ(w http.ResponseWriter, r *http.Request) {
+func processNAMAZ(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var cacheKey = r.URL.Query().Get("cachekey")
 
 	var monthRequested = r.URL.Query().Get("month")
@@ -57,7 +57,7 @@ func processNAMAZ(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func showAllYear(w http.ResponseWriter, h *http.Request) {
+func showAllYear(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
 
 	var cacheKey = h.URL.Query().Get("cachekey")
 
@@ -126,7 +126,7 @@ func currentBCMLogic(resc chan mosquescrappers.Prayer) {
 	resc <- res
 }
 
-func currentBCM(w http.ResponseWriter, h *http.Request) {
+func currentBCM(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
 
 	c := make(chan mosquescrappers.Prayer)
 	go currentBCMLogic(c)
@@ -467,6 +467,11 @@ func handlePortfolio2(w http.ResponseWriter, h *http.Request, ps httprouter.Para
 	})
 }
 
+func handleSinglePortfolio(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
+
+	fmt.Fprintf(w, ps.ByName("slug"))
+}
+
 func handleRequest() {
 	//all api calls return json
 	// http.HandleFunc("/", handleHomePage)
@@ -475,7 +480,10 @@ func handleRequest() {
 	//handles the homag page route
 	router.GET("/", handleNewHomePage)
 	router.GET("/blog", handleBlog2)
+
 	router.GET("/portfolio", handlePortfolio2)
+	router.GET("/portfolio/:slug", handleSinglePortfolio)
+
 	router.GET("/cv", handleCV)
 	router.GET("/skill", handleSkills)
 
@@ -484,21 +492,9 @@ func handleRequest() {
 
 	router.GET("/bcm", handleBCM)
 	router.GET("/isna", handleISNA)
-
-	// http.HandleFunc("/howto/scrape", HandleHowTo)
-
-	// //for skills
-	// http.HandleFunc("/skill", handleSkills)
-
-	// http.HandleFunc("/contact", handleContact)
-	// http.HandleFunc("/create", handleCreate)
-	// http.HandleFunc("/processCreate", processCreate)
-	// http.HandleFunc("/processUpdate", processUpdate)
-	// http.HandleFunc("/view", processPostView)
-	// http.HandleFunc("/edit", processEditPost)
-	// http.HandleFunc("bcmmonth/", processNAMAZ)
-	// http.HandleFunc("/bcmall", showAllYear)
-	// http.HandleFunc("/bcmc", currentBCM)
+	router.GET("/bcmmonth", processNAMAZ)
+	router.GET("/bcmall", showAllYear)
+	router.GET("/bcmc", currentBCM)
 
 	var PORT = os.Getenv("PORT")
 	if PORT == "" {
