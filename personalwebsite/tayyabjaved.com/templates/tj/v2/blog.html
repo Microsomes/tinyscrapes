@@ -7,10 +7,12 @@ Tayyabs Blog
     <h1 class="text-xl">Blogs are hosted on my Hashnode</h1>
     <a target="_blank" class="text-center mt-2 underline" href="https://hashnode.com/@Microsomes">Visit Me There</a>
 
-    <div class="mt-6 space-y-3">
+    <div class="mt-6 flex flex-wrap justify-center space-x-12 space-y-12 space-y-3">
     {{range .Data.Data.User.Publication.Posts}}
-        <div>
-            <a target="_blank" href="https://tayyabjaved.hashnode.dev/{{.Slug}}"><p class="text-2xl">{{.Title}}</p></a>
+    
+        <div class="h-96 w-96 cursor-pointer hover:bg-gray-400 hover:p-12 rounded-md flex items-center justify-center" style="border-top:1px solid lightgray;background-image: url('{{.CoverImage}}');background-size: cover;background-repeat: no-repeat;" 
+        >
+            <a class="bg-black rounded-md p-1 shadow-xl" target="_blank" href="https://tayyabjaved.hashnode.dev/{{.Slug}}"><p class="text-2xl">{{.Title}}</p></a>
         </div>
     {{end}}
     </div>

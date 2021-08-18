@@ -19,7 +19,7 @@ type BlogResult struct {
 					Title      string    `json:"title"`
 					Slug       string    `json:"slug"`
 					DateAdded  time.Time `json:"dateAdded"`
-					DatePretty string
+					CoverImage string    `json:"coverImage"`
 				} `json:"posts"`
 			} `json:"publication"`
 		} `json:"user"`
@@ -34,7 +34,7 @@ TODO add some pagination logic because currently their is none
 func GetBlogs() BlogResult {
 	url := "https://api.hashnode.com/"
 
-	payload := strings.NewReader("{\"query\":\"# Write your query or mutation here\\n{\\n  \\n  user(username:\\\"microsomes\\\"){\\n    name\\n    blogHandle\\n    publication{\\n      posts(page:0){\\n        title\\n        slug\\n        dateAdded\\n      }\\n    }\\n  }\\n  \\n}\\n\"}")
+	payload := strings.NewReader("{\"query\":\"# Write your query or mutation here\\n{\\n  \\n  user(username:\\\"microsomes\\\"){\\n    name\\n    blogHandle\\n    publication{\\n      posts(page:0){\\n        title\\n        slug\\n        dateAdded\\n        coverImage\\n      }\\n    }\\n  }\\n  \\n}\\n\"}")
 	req, _ := http.NewRequest("POST", url, payload)
 
 	req.Header.Add("Content-Type", "application/json")
@@ -49,12 +49,6 @@ func GetBlogs() BlogResult {
 	err := json.Unmarshal(body, &objMap)
 	if err != nil {
 		log.Fatal()
-	}
-
-	var objMapRef = &objMap
-
-	for _, v := range objMapRef.Data.User.Publication.Posts {
-		v.DatePretty = "egoga"
 	}
 
 	return objMap
