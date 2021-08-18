@@ -16,6 +16,7 @@ require (
 	github.com/gocolly/colly v1.2.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/julienschmidt/httprouter v1.3.0
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect

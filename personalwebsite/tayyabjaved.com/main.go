@@ -14,6 +14,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 type Standardv2Return struct {
@@ -81,7 +83,7 @@ type StrucutedResponse struct {
 	Data   interface{}
 }
 
-func handleISNA(w http.ResponseWriter, h *http.Request) {
+func handleISNA(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
 	m := make(chan []mosquescrappers.ISNAPrayer)
 	go mosquescrappers.ScrapeISNACanada(m)
 	res := <-m
@@ -136,7 +138,7 @@ func currentBCM(w http.ResponseWriter, h *http.Request) {
 
 }
 
-func handleBCM(w http.ResponseWriter, h *http.Request) {
+func handleBCM(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
 	c := make(chan mosquescrappers.Prayer)
 	go currentBCMLogic(c)
 	res := <-c
@@ -292,7 +294,7 @@ func processUpdate(w http.ResponseWriter, h *http.Request) {
 
 }
 
-func handleCV(w http.ResponseWriter, h *http.Request) {
+func handleCV(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
 	tepl, _ := template.ParseFiles("templates/tj/static/tayyabcv.html")
 	tepl.Execute(w, "")
 }
@@ -323,7 +325,7 @@ func handleBlog(w http.ResponseWriter, h *http.Request) {
 	tepl.Execute(w, "")
 }
 
-func handleBlog2(w http.ResponseWriter, h *http.Request) {
+func handleBlog2(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
 	tepl, _ := template.New("base").ParseFiles("templates/tj/v2/blog.html", "templates/tj/base2.html")
 	blogs := helpers.GetBlogs()
 
@@ -346,8 +348,8 @@ func openCountries() (*os.File, bool) {
 	return jsonFile, isError
 }
 
-func handleCity(w http.ResponseWriter, h *http.Request) {
-	country := h.URL.Query().Get("country")
+func handleCity(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
+	country := ps.ByName("byCountry")
 	jsonFile, isError := openCountries()
 	if isError {
 		fmt.Fprint(w, "Something went wrong try again later")
@@ -388,7 +390,7 @@ func handleCity(w http.ResponseWriter, h *http.Request) {
 	w.Write(js)
 }
 
-func handleCountry(w http.ResponseWriter, h *http.Request) {
+func handleCountry(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
 	jsonFile, isError := openCountries()
 	if isError {
 		fmt.Fprint(w, "Something went wrong try again later")
@@ -428,7 +430,7 @@ func MakeHappen() {
 }
 
 //handle the new home page with new home page
-func handleNewHomePage(w http.ResponseWriter, h *http.Request) {
+func handleNewHomePage(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
 	tepl, _ := template.New("base").ParseFiles("templates/tj/v2/home.html", "templates/tj/base2.html")
 	x := helpers.GetSkills()
 	tepl.Execute(w, Standardv2Return{
@@ -439,13 +441,13 @@ func handleNewHomePage(w http.ResponseWriter, h *http.Request) {
 
 }
 
-func handleSkills(w http.ResponseWriter, h *http.Request) {
+func handleSkills(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
 	js, _ := json.Marshal(helpers.GetSkills())
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
 }
 
-func handlePortfolio2(w http.ResponseWriter, h *http.Request) {
+func handlePortfolio2(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
 	//gets all portfolio data
 	x := helpers.GetPort()
 	type PorfolioPage struct {
@@ -469,44 +471,43 @@ func handleRequest() {
 	//all api calls return json
 	// http.HandleFunc("/", handleHomePage)
 
-	http.HandleFunc("/", handleNewHomePage)
+	router := httprouter.New()
+	//handles the homag page route
+	router.GET("/", handleNewHomePage)
+	router.GET("/blog", handleBlog2)
+	router.GET("/portfolio", handlePortfolio2)
+	router.GET("/cv", handleCV)
+	router.GET("/skill", handleSkills)
 
-	http.HandleFunc("/howto/scrape", HandleHowTo)
+	router.GET("/cities/:byCountry", handleCity)
+	router.GET("/countries", handleCountry)
 
-	//for skills
-	http.HandleFunc("/skill", handleSkills)
+	router.GET("/bcm", handleBCM)
+	router.GET("/isna", handleISNA)
 
-	//for the weather app
-	http.HandleFunc("/cities", handleCity)
-	http.HandleFunc("/countries", handleCountry)
+	// http.HandleFunc("/howto/scrape", HandleHowTo)
 
-	http.HandleFunc("/cv", handleCV)
+	// //for skills
+	// http.HandleFunc("/skill", handleSkills)
 
-	http.HandleFunc("/portfolio", handlePortfolio2)
-	// http.HandleFunc("/portfolio2", handlePortfolio2)
+	// http.HandleFunc("/contact", handleContact)
+	// http.HandleFunc("/create", handleCreate)
+	// http.HandleFunc("/processCreate", processCreate)
+	// http.HandleFunc("/processUpdate", processUpdate)
+	// http.HandleFunc("/view", processPostView)
+	// http.HandleFunc("/edit", processEditPost)
+	// http.HandleFunc("bcmmonth/", processNAMAZ)
+	// http.HandleFunc("/bcmall", showAllYear)
+	// http.HandleFunc("/bcmc", currentBCM)
 
-	http.HandleFunc("/contact", handleContact)
-	http.HandleFunc("/create", handleCreate)
-	http.HandleFunc("/processCreate", processCreate)
-	http.HandleFunc("/processUpdate", processUpdate)
-	http.HandleFunc("/blog", handleBlog2)
-	http.HandleFunc("/view", processPostView)
-	http.HandleFunc("/edit", processEditPost)
-	http.HandleFunc("bcmmonth/", processNAMAZ)
-	http.HandleFunc("/bcmall", showAllYear)
-	http.HandleFunc("/bcmc", currentBCM)
-	//
-	//these generate templates
-	http.HandleFunc("/bcm", handleBCM)
-	http.HandleFunc("/isna", handleISNA)
 	var PORT = os.Getenv("PORT")
 	if PORT == "" {
 		PORT = "10000"
 	}
 
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("templates/tj/static"))))
+	router.ServeFiles("/static/*filepath", http.Dir("templates/tj/static"))
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", PORT), router))
 }
 
 func main() {
