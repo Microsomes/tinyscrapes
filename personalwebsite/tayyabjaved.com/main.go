@@ -470,11 +470,20 @@ func handlePortfolio2(w http.ResponseWriter, h *http.Request, ps httprouter.Para
 
 func handleSinglePortfolio(w http.ResponseWriter, h *http.Request, ps httprouter.Params) {
 	x := helpers.FindBlogBySlug(ps.ByName("slug"))
+	x2 := helpers.GetPort()
+
+	type TwoDatas struct {
+		Data1 interface{}
+		Data2 interface{}
+	}
 
 	tepl, _ := template.New("base").ParseFiles("templates/tj/v2/portfolioitem.html", "templates/tj/base2.html")
 	tepl.Execute(w, Standardv2Return{
-		Route:   "/blogitem",
-		Data:    x,
+		Route: "/blogitem",
+		Data: TwoDatas{
+			Data1: x,
+			Data2: x2,
+		},
 		IsWhite: true,
 	})
 }

@@ -1,8 +1,21 @@
 {{define "title"}}
-Tayyabs-{{.Data.Name}}
+Tayyabs-{{.Data.Data1.Name}}
 {{end}}
 
 {{define "content"}}
+
+<style>
+ 
+  .hv{
+    transition: .1s all;
+  }
+ .hv:hover{
+   font-size: 30px;
+   border:1px solid black;
+   padding:10px;
+   border-radius: 20px;
+ }
+</style>
 
 <a href="/portfolio" class="block"><div class="h-24 pl-12 cursor-pointer bg-white flex items-center">
     <svg class="w-12 h-12 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg>
@@ -10,14 +23,14 @@ Tayyabs-{{.Data.Name}}
 </div></a>
 
 <div class="bg-white flex flex-col  " style="height:500px">
-    <h1 class="text-black text-5xl mt-24">{{.Data.Name}}</h1>
+    <h1 class="text-black text-5xl mt-24">{{.Data.Data1.Name}}</h1>
     <div class="flex items-center mt-2 justify-center">
-    <p class="text-black mt-2 text-3xl w-2/3 text-center">{{.Data.Subline}}</p>
+    <p class="text-black mt-2 text-3xl w-2/3 text-center">{{.Data.Data1.Subline}}</p>
     </div>
 
-    {{if .Data.IsSample}}
+    {{if .Data.Data1.IsSample}}
     <div class="flex items-center justify-center mt-24">
-    <a target="_blank" href="{{.Data.SampleLink}}">
+    <a target="_blank" href="{{.Data.Data1.SampleLink}}">
     <button class="hover:bg-blue-300 bg-blue-600 h-12 rounded-md w-96">
         Visit Website
     </button>
@@ -27,11 +40,11 @@ Tayyabs-{{.Data.Name}}
 
 </div>
 
-<div style="height:4000px">
+<div style="">
 
-    {{if.Data.IsScreenShot}}
-    <div class="flex flex-wrap items-center justify-center">
-    {{range .Data.Screenshots}}
+    {{if.Data.Data1.IsScreenShot}}
+    <div style="height:400px" class="flex flex-wrap items-center justify-center">
+    {{range .Data.Data1.Screenshots}}
   <div class="p-10">  
     <!--Card 1-->
     <div class="max-w-sm rounded overflow-hidden shadow-lg">
@@ -41,6 +54,44 @@ Tayyabs-{{.Data.Name}}
     {{end}}
     </div>
     {{end}}
+
+    <div style="height:800px" class="bg-gray-600">
+
+      <div class="flex p-12  items-center flex-col justify-center">
+
+        <div style="min-width:500px;" class=" flex flex-col items-start justify-center">
+          <div  class="text-2xl">{{.Data.Data1.Subline}}</div>
+        </div>
+
+      <div style="width:500px;padding-top:40px" class=" flex flex-col items-start justify-center">
+        <h3 class="text-white text-2xl">Year:</h3>
+        <div class="text-5xl">{{.Data.Data1.Year}}</div>
+      </div>
+
+      <div style="width:500px;padding:40px" class=" flex flex-col items-start justify-center">
+        <h3 class="text-white text-2xl">Technologies Used:</h3>
+        {{range .Data.Data1.Technologies}}
+        <div class="text-5xl">{{.}}</div>
+        {{end}}
+      </div>
+
+     
+
+      </div>
+
+    </div>
+
+    <div class="bg-white flex-col flex items-center justify-center" style="height:400px">
+        <h3 class="text-black text-4xl pt-2 pb-5">Other Projects</h3>
+
+        {{ range .Data.Data2}}
+       <p  class="hv cursor-pointer text-2xl text-black">
+         {{.Name}}
+       </p>
+       {{end}}
+
+
+    </div>
     
 
 </div>

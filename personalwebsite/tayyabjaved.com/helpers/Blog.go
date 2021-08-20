@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -23,6 +24,15 @@ type BlogResult struct {
 				} `json:"posts"`
 			} `json:"publication"`
 		} `json:"user"`
+	} `json:"data"`
+}
+
+type SinglePost struct {
+	Data struct {
+		Post struct {
+			Title           string `json:"title"`
+			ContentMarkdown string `json:"contentMarkdown"`
+		} `json:"post"`
 	} `json:"data"`
 }
 
@@ -54,6 +64,17 @@ func GetBlogs() BlogResult {
 	return objMap
 }
 
-func GetBlogBySlugandHostname(slug, hostname string) {
+//gets blog post from graphql api from hashnode
+func GetBlogBySlugandHostname(slug, hostname string) (SinglePost, error) {
+	url := "https://api.hashnode.com/"
+	payload := strings.NewReader(fmt.Sprintf("{\"query\":\"query GetStory ($id:String!,$hostname:String!){\\n  post(slug:$id,hostname:$hostname){\\n    title\\n    contentMarkdown\\n  }\\n}\",\"variables\":{\"id\":\"%s\",\"hostname\":\"%s\"},\"operationName\":\"GetStory\"}", slug, hostname))
+	req, _ := http.NewRequest("POST", url, payload)
+	req.Header.Add("Content-Type", "application/json")
+	res, _ := http.DefaultClient.Do(req)
+	body, _ := ioutil.ReadAll(res.Body)
+	var lpost SinglePost
+	err := json.Unmarshal(body, &lpost)
+	defer res.Body.Close()
 
+	return lpost, err
 }

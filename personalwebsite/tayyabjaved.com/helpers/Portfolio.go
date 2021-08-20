@@ -66,6 +66,10 @@ func GetPort() []PortfolioData {
 			"https://firebasestorage.googleapis.com/v0/b/discord-2a9c9.appspot.com/o/bespokecake%2FScreenshot%20from%202021-08-18%2012-24-05.png?alt=media&token=c214b53b-a78a-4acc-8579-9a6facbd05cd",
 		},
 		IsScreenShot: true,
+		BlogContent: PortfolioBlog{
+			Slug:     "bespoke-cake-editor",
+			HostName: "tayyabjaved",
+		},
 	})
 
 	allPort = append(allPort, PortfolioData{
@@ -84,7 +88,8 @@ func GetPort() []PortfolioData {
 		},
 		IsScreenShot: true,
 		BlogContent: PortfolioBlog{
-			Slug: "",
+			Slug:     "hr-employee-time-track",
+			HostName: "tayyabjaved",
 		},
 	})
 
@@ -103,6 +108,10 @@ func GetPort() []PortfolioData {
 			"https://firebasestorage.googleapis.com/v0/b/discord-2a9c9.appspot.com/o/bespokecom%2FScreenshot%20from%202021-08-18%2013-05-02.png?alt=media&token=f09fc4dd-c111-4224-9cbf-d00206fedcc9",
 		},
 		IsScreenShot: true,
+		BlogContent: PortfolioBlog{
+			Slug:     "bespoke-e-commerce",
+			HostName: "tayyabjaved",
+		},
 	})
 
 	allPort = append(allPort, PortfolioData{
@@ -115,6 +124,10 @@ func GetPort() []PortfolioData {
 		IsSample:     false,
 		Subline:      "Handling and tracking 1000s of daily orders, from generating shipping labels through logging each order through various stages of the factory process, this software had it all",
 		IsScreenShot: false,
+		BlogContent: PortfolioBlog{
+			Slug:     "bespoke-factory",
+			HostName: "tayyabjaved",
+		},
 	})
 
 	return allPort
